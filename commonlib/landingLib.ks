@@ -55,7 +55,7 @@ global landingLib to ({
     }
     
     local function calculateLanding {
-        parameter shipThrust, engineIsp, altitudeMargin is 0.
+        parameter shipThrust, engineIsp, altitudeMargin is 0, progressUpdater is { parameter simInfo. }.
         
         // find impact time
         local impactSim to findOrbitImpactPosition().
@@ -100,11 +100,9 @@ global landingLib to ({
             set simHistory to simulationLib:simulateToZeroVelocity(simBurnStartTime, simPos, simVelocity, ship:mass, shipThrust, engineIsp, body, deltaTimeList[deltaTimeIndex]).
             set simEndState to simHistory[simHistory:length-1].
             set simPos to simEndState[1].
-            print "Sim done in " + simHistory:length + " steps with dt " + deltaTimeList[deltaTimeIndex] + ". V = " + round(simEndState[2]:mag, 4).
-
-            set simTerrainPos to body:geopositionof(simPos + body:position):position - body:position + (simPos:normalized * altitudeMargin).
-            
+            set simTerrainPos to body:geopositionof(simPos + body:position):position - body:position + (simPos:normalized * altitudeMargin).            
             set altitudeError to simPos:mag - simTerrainPos:mag.
+            
             if abs(altitudeError) > 1 {
                 if simBurnStartDelay <> 0 {
                     set simBurnStartDelay to abs(simBurnStartDelay) * max(min(altitudeError / abs(altitudeError - lastAltitudeError), 1), -1).
@@ -120,13 +118,16 @@ global landingLib to ({
                 set simBurnStartDelay to 0.
             }
 
-            print "AE: " + round(altitudeError, 2) + ", LE: " + round(lastAltitudeError, 2) + ", SD: " + round(simBurnStartDelay, 4).
+            progressUpdater(lexicon("dt", deltaTimeList[deltaTimeIndex],
+                                    "steps", simHistory:length,
+                                    "velocityError", round(simEndState[2]:mag, 4),
+                                    "altitudeError", round(altitudeError, 2),
+                                    "burnStartDelay", simBurnStartDelay)).
 
             if (simBurnStartDelay = 0) or ((simBurnStartDelay + simOldBurnStartDelay) = 0) {
                 set simIsGoodEnough to (simBurnStartDelay = 0) and (abs(altitudeError - lastAltitudeError) < 0.5).
                 if (not simIsGoodEnough) and (deltaTimeIndex < (deltaTimeList:length - 1)) {
                     set deltaTimeIndex to deltaTimeIndex + 1.
-                    print "Setting dt to " + deltaTimeList[deltaTimeIndex].
                 }
                 else {
                     break.
