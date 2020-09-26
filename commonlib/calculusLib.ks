@@ -1,20 +1,19 @@
 @LAZYGLOBAL off.
 
-// import libraries
-runoncepath("commonlib/constants").
-
 global calculusLib to ({
+    local zeroVector to V(0,0,0).
+
     // start returning meaningful data on the second call
     local function vectorDerivative {
         local lastTime to time:seconds.
-        local lastValue to vectorZero.
+        local lastValue to zeroVector.
         local deltaTime to 0.
         
         local function calculate {
             parameter currentTime, currentValue.
             
             set deltaTime to currentTime - lastTime.
-            local derivative to vectorZero:vec.
+            local derivative to zeroVector:vec.
             if deltaTime > 0 {
                 set derivative to (currentValue - lastValue) / deltaTime.
             }
@@ -36,7 +35,7 @@ global calculusLib to ({
 
     // start returning meaningful data on the third call
     local function vectorDoubleDerivative {
-        local lastValue to vectorZero.
+        local lastValue to zeroVector.
         local derivativeObj to vectorDerivative().
         
         local function calculate {
@@ -44,7 +43,7 @@ global calculusLib to ({
             
             local derivative to derivativeObj:calculate(currentTime, currentValue).
             local deltaTime to derivativeObj:deltaTime().
-            local doubleDerivative to vectorZero:vec.
+            local doubleDerivative to zeroVector:vec.
             if deltaTime > 0 {
                 set doubleDerivative to (derivative - lastValue) / deltaTime.
             }
@@ -66,7 +65,7 @@ global calculusLib to ({
             parameter currentTime, currentValue.
             
             set deltaTime to currentTime - lastTime.
-            local derivative to vectorZero:vec.
+            local derivative to zeroVector:vec.
             if deltaTime > 0 {
                 set derivative to (currentValue - referenceValue) / deltaTime.
             }

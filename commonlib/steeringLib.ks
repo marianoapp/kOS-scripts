@@ -1,13 +1,12 @@
 @LAZYGLOBAL off.
 
 // import libraries
-runoncepath("commonlib/constants").
 runoncepath("commonlib/asyncLib").
 
 global steeringLib to ({
     local function getDirectionNoRoll {
         parameter vector.
-        return lookdirup(vector, ship:facing*vectorY).
+        return lookdirup(vector, ship:facing:topvector).
     }
     
     local function getVesselDirection {

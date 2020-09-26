@@ -8,6 +8,11 @@ runoncepath("commonlib/rcsLib").
 runoncepath("commonlib/asyncLib").
 
 global translationLib to ({
+    local pidTuneMode to lexicon(
+        "SetpointTracking", 1,
+        "DisturbanceRejection", 2
+    ).
+
     local function translate {
         parameter translation, duration.
         set ship:control:translation to translation.
@@ -23,129 +28,120 @@ global translationLib to ({
         local whenDone to { set ship:control:translation to V(0,0,0). }.
         
         set ship:control:translation to translation.
-        return asyncLib:newTask(isDone@, whenDone@).
+        return asyncLib:newTask(isDone, whenDone).
     }
     
     local function initializePids {
-        parameter maxAcceleration.
+        parameter tuneMode.
         
-        local pids to pidLib:pidVector(0, 0, 0).
+        // TODO: cache these values, maybe in a file in the local core memory
         local rcsThrust to rcsLib:getTotalThrustList().
         
-        // kp
-        local avgThrust to (rcsThrust[0] + rcsThrust[1]) / 2.
-        local availableAcceleration to vectorLib:boundScalar(avgThrust / ship:mass, 0, maxAcceleration).
-        local kps to 2 * vectorLib:inverse(availableAcceleration).
-        pids:setKps(kps).
+        local minAxisAccs to vectorLib:elementWiseMin(rcsThrust[0] / ship:mass, rcsThrust[1] / ship:mass).
+        local avgAxisThrusts to (rcsThrust[0] + rcsThrust[1]) / 2.
+        local availableAxisAccs to avgAxisThrusts / ship:mass.
+        // TODO: load pids from file, if it exists
         
-        // limits
-        pids:setBounds(
-            -vectorLib:boundScalar(maxAcceleration * vectorLib:inverse(rcsThrust[0] / ship:mass), 0, 1),
-            vectorLib:boundScalar(maxAcceleration * vectorLib:inverse(rcsThrust[1] / ship:mass), 0, 1)
-        ).
+        local pids to pidLib:pidVector(0.776, 0, 0, -1, 1).
+
+        // TODO: check if the 20 factor is too much or way too much
+        local kiFactor to choose 1 if tuneMode = pidTuneMode:SetpointTracking else 5.
+        local kis to kiFactor * 0.01210737 * availableAxisAccs.
+        pids:setKis(kis).
         
-        return pids.
+        return list(pids, minAxisAccs).
     }
 
     local function translateToPosition {
-        parameter targetPosition.                   // () => Vector     returns the target position (RAW)
-        parameter referencePosition is V(0,0,0).    // Vector           point of reference used to measure the distance (SHIP)
-        parameter maxAcceleration is 100.           // Scalar           maximum acceleration in m/s^2 
+        parameter targetPosition,                   // () => Vector     returns the target position (RAW)
+                  stopCondition,                    // () => Boolean    returns true to abort the loop
+                  referencePosition is V(0,0,0),    // Vector           point of reference used to measure the distance (SHIP)
+                  speedLimit is 5.                  // Double           lower and upper speed limits
             
-        local stopFlag to false.
-        local distanceToTarget to V(10000,10000,10000). // just a big number
-        local currentSpeed to V(0,0,0).
-        local lowerSpeedBound to 0.2.
-        local upperSpeedBound to 3.
-        local pids to initializePids(maxAcceleration).
+        local distanceToTarget to V(1000,1000,1000).    // just a big number
+        local currentVelocity to V(0,0,0).
+        // TODO: add an integral component to compensate for things like gravity (maybe only when suborbital?)
+        local pidsInfo to initializePids(pidTuneMode:SetpointTracking).
+        local pids to pidsInfo[0].
+        local minAxisAccs to pidsInfo[1].
+        local factor to min(min(minAxisAccs:X, minAxisAccs:Y), minAxisAccs:Z) / 4.
+        local alterFactor to true.
+        // print "Accs: " + vectorLib:roundVector(minAxisAccs, 4).
+        // print "Factor: " + round(factor, 4).
         
         local function start {
-            local maxSpeed to V(0,0,0).
-            local velObj to calculusLib:vectorDerivative().
+             local velObj to calculusLib:vectorDerivative().
             local currentTime to 0.
             local currentPosition to V(0,0,0).
             local currentPath to V(0,0,0).
+            local desiredVelocity to V(0,0,0).
             local PATHtoRAW to R(0,0,0).
             local RAWtoPATH to R(0,0,0).
             
-            set stopFlag to false.
-            
             // aliases of library functions to improve performance
-            local vectorLib_boundScalar to vectorLib:boundScalar@.
-            local vectorLib_absVector to vectorLib:absVector@.
-            local vectorLib_bound to vectorLib:bound@.
-            local velObj_calculate to velObj:calculate@.
-            local pids_setpoint to pids:setpoint@.
-            local pids_update to pids:update@.
+            local velObj_calculate to velObj:calculate.
+            local pids_setpoint to pids:setpoint.
+            local pids_update to pids:update.
             local shipCtrl to ship:control.
-            local shipFacing to ship:facing.
+
+            pids_setpoint(V(0,0,0)).
             
-            // make sure the loop starts on the next frame so it doesn't get interrupted in the middle
-            wait 0.01.
+            // make sure the loop starts on the next tick so it doesn't get interrupted in the middle
+            wait 0.
             
-            until stopFlag {
+            until stopCondition() {
                 set currentTime to time:seconds.
                 set currentPosition to targetPosition().
-                set shipFacing to ship:facing.
                 
                 // update the path if it diverges too much from the previous one
                 if vang(currentPath, currentPosition) > 20 {
                     set currentPath to currentPosition.
-                    set PATHtoRAW to lookdirup(currentPosition, shipFacing:topvector).
+                    set PATHtoRAW to lookdirup(currentPosition, facing:topvector).
                     set RAWtoPATH to -PATHtoRAW.
                 }
                 
-                set distanceToTarget to RAWtoPATH * (currentPosition - shipFacing*referencePosition).
-                set maxSpeed to vectorLib_boundScalar(vectorLib_absVector(distanceToTarget/5), lowerSpeedBound, upperSpeedBound).
-  
-                // the desired velocity per axis depends on the distance to the target
-                pids_setpoint(vectorLib_bound(distanceToTarget, -maxSpeed, maxSpeed)).
+                set distanceToTarget to RAWtoPATH * (currentPosition - facing*referencePosition).
+                set desiredVelocity to distanceToTarget:normalized * min(distanceToTarget:mag * factor, speedLimit).
+
+                // calculate the current velocity as dx/dt
+                set currentVelocity to -velObj_calculate(currentTime, distanceToTarget).
                 // compare the current velocity to the desired one and make corrections
-                set currentSpeed to -velObj_calculate(currentTime, distanceToTarget).
                 // PATHtoSHIP = RAWtoSHIP * PATHtoRAW
-                set shipCtrl:translation to (-shipFacing) * PATHtoRAW * pids_update(currentTime, currentSpeed).
+                set shipCtrl:translation to (-facing) * PATHtoRAW * pids_update(currentTime, currentVelocity - desiredVelocity).
                 
-                wait 0.01.
+                wait 0.
             }.
 
-            set ship:control:translation to V(0,0,0).
+            set shipCtrl:translation to V(0,0,0).
         }
-        
-        local function stop {
-            set stopFlag to true.
-        }
-        
-        local function distance {
-            return distanceToTarget.
-        }
-        
-        local function speed {
-            return currentSpeed.
-        }
-        
-        local function isDone {
-            return distanceToTarget:mag < 0.2 and currentSpeed:mag < 0.1.
-        }
-        
-        local function resetDistance {
-            set distanceToTarget to V(10000,10000,10000).   // just a big number
-        }
-        
-        local function setSpeedBounds {
-            parameter lowerBound, upperBound.
-            set lowerSpeedBound to lowerBound.
-            set upperSpeedBound to upperBound.
+
+        local function getDistance {
+            return distanceToTarget:mag.
         }
         
         return lexicon(
             "start", start@,
-            "stop", stop@,
-            "distance", distance@,
-            "isDone", isDone@,
-            "speed", speed@,
-            "resetDistance", resetDistance@,
-            "setSpeedBounds", setSpeedBounds@
+            "getDistance", getDistance@
         ).
+    }
+
+
+    local function cancelVelocityError {
+        parameter velocityError,    // () => Vector     returns the velocity error (RAW)
+                  stopCondition.    // () => Boolean    returns true to abort the loop
+
+        local pids to initializePids(pidTuneMode:DisturbanceRejection)[0].
+        pids:setpoint(V(0,0,0)).
+
+        local pids_update to pids:update.
+        local shipCtrl to ship:control.
+
+        until stopCondition() {
+            set shipCtrl:translation to (-ship:facing) * pids_update(time:seconds, -velocityError()).
+            wait 0.
+        }
+
+        set shipCtrl:translation to V(0,0,0).
     }
     
     local function followWaypoints {
@@ -156,25 +152,26 @@ global translationLib to ({
         local targetPosition to { return waypointPosition + referencePoint(). }.
         local translateObj to translateToPosition(targetPosition).
         
-        // waypoint could be a more complex object in the future, for now it's just a vector
-        for waypoint in waypointList {
-            set waypointPosition to waypoint.
-            // find a better way to inform there's a new target
-            translateObj:resetDistance().
-            when translateObj:distance():mag < 1 then {
-                translateObj:stop().
-            }
-            // print "Moving to waypoint " + vectorLib:roundVector(waypoint, 3).
-            translateObj:start().
-        }
+        // // waypoint could be a more complex object in the future, for now it's just a vector
+        // for waypoint in waypointList {
+        //     set waypointPosition to waypoint.
+        //     // find a better way to inform there's a new target
+        //     translateObj:resetDistance().
+        //     when translateObj:distance():mag < 1 then {
+        //         translateObj:stop().
+        //     }
+        //     // print "Moving to waypoint " + vectorLib:roundVector(waypoint, 3).
+        //     translateObj:start().
+        // }
         
         // TODO: kill movement
     }
-        
+    
     return lexicon(
         "translate", translate@,
         "translateAsync", translateAsync@,
         "translateToPosition", translateToPosition@,
+        "cancelVelocityError", cancelVelocityError@,
         "followWaypoints", followWaypoints@
     ).
 }):call().

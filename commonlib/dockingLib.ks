@@ -5,6 +5,7 @@ runoncepath("commonlib/translationLib").
 runoncepath("commonlib/rotationLib").
 runoncepath("commonlib/steeringLib").
 runoncepath("commonlib/asyncLib").
+runoncepath("commonlib/schedulingLib").
 
 global dockingLib to ({
     // roll match modes
@@ -17,8 +18,13 @@ global dockingLib to ({
         "Exact", 2
     ).
 
-    local function findDockingPort
-    {
+    local partsMetadata to lexicon(
+        "dockingPort2", lexicon(
+            "frontOffset", 0.3
+        )
+    ).
+
+    local function findDockingPort {
         parameter targetVessel.
 
         local dockTarget to targetVessel.
@@ -71,9 +77,20 @@ global dockingLib to ({
         return steeringDelegate.
     }
 
-    local function dock
-    {
-        parameter ownPort, targetPort, rollMatchMode is rollMatchModeEnum:Current.
+    local function getPortFrontPosition {
+        parameter portPart.
+
+        local frontOffset to 0.
+        if partsMetadata:haskey(portPart:name) {
+            set frontOffset to partsMetadata[portPart:name]["frontOffset"].
+        }
+        // local frontOffset to 1.
+
+        return portPart:portfacing:forevector:normalized * frontOffset.
+    }
+
+    local function dock {
+        parameter ownPort, targetPort, rollMatchMode is rollMatchModeEnum:Current, maxSpeed is 2.
         
         ownPort:controlfrom().
         
@@ -81,25 +98,31 @@ global dockingLib to ({
         local steerTask to steeringLib:steerToDelegateAsync(getSteeringDelegate(targetPort, rollMatchMode)).
 
         // position the vessel just above the docking port
-        local positionOffset to V(0,0,3).
-        local targetPosition to { return targetPort:position + targetPort:portfacing*positionOffset. }.
-        local translateObj to translationLib:translateToPosition(targetPosition, rotationLib:rawToShip() * ownPort:position).
-        // the speed bounds depend on the mass [ y = -2/495*(mass-2) + 1 ]
-        local upperSpeedBound to -2/495 * (min(max(ship:mass, 2), 200) - 2) + 1.
-        translateObj:setSpeedBounds(upperSpeedBound / 5, upperSpeedBound).
+        local positionOffset to 1.
+        local stopFlag to false.
+        local targetPosition to { return targetPort:position + targetPort:portfacing:forevector*positionOffset. }.
+        local stopCondition to { return stopFlag or abort. }.
+        local referencePosition to (-ship:facing) * (ownPort:position + getPortFrontPosition(ownPort)).
+
+        clearvecdraws().
+        local sp to vecdrawargs(v(0,0,0), v(0,0,0), green, "", 1, true).
+        set sp:vecupdater to { return facing*referencePosition. }.
+        local sp2 to vecdrawargs(v(0,0,0), v(0,0,0), red, "", 1, true).
+        set sp2:vecupdater to targetPosition.
+
+        local tp to translationLib:translateToPosition(targetPosition, stopCondition, referencePosition, maxSpeed).
         // when close enough approach and dock
-        when translateObj:isDone() then {
-            set positionOffset to V(0,0,0.7).
-            when ownPort:haspartner then {
-                when translateObj:distance():mag < 0.4 then {
-                    translateObj:stop().
-                }
-            }
-        }
+        local sequence to schedulingLib:sequenceScheduler().
+        sequence:addEvent({ return tp:getDistance() < 0.25. }, { set positionOffset to 0.6. }).
+        sequence:addEvent({ return ownPort:haspartner. }, { }).    // do nothing
+        sequence:addEvent({ return tp:getDistance() < 0.4. }, { set stopFlag to true. }).
+        //sequence:addEvent({ return tp:getDistance() < 0.01. }, { set stopFlag to true. }).
+
         asyncLib:await(steerTask).
-        translateObj:start().
+        tp:start().
         
         unlock steering.
+        clearvecdraws().
     }
     
     return lexicon(

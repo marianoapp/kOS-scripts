@@ -2,11 +2,11 @@
 
 global rotationLib to ({
     local function shipToRaw {
-        return ship:facing.
+        return facing.
     }
     
     local function rawToShip {
-        return ship:facing:inverse.
+        return -facing.
     }
     
     local function partToRaw {
@@ -16,7 +16,7 @@ global rotationLib to ({
     
     local function rawToPart {
         parameter part.
-        return part:facing:inverse.
+        return -part:facing.
     }
     
     local function partToShip {
@@ -50,15 +50,15 @@ global rotationLib to ({
     }
     
     local function shipX {
-        return shipToRaw() * V(1,0,0).
+        return facing:starvector.
     }
     
     local function shipY {
-        return shipToRaw() * V(0,1,0).
+        return facing:topvector.
     }
     
     local function shipZ {
-        return shipToRaw() * V(0,0,1).
+        return facing:forevector.
     }
     
     return lexicon(

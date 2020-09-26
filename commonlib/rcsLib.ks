@@ -1,7 +1,6 @@
 @LAZYGLOBAL off.
 
 // import libraries
-runoncepath("commonlib/vectorLib").
 runoncepath("commonlib/rotationLib").
 
 global rcsLib to ({
@@ -10,28 +9,28 @@ global rcsLib to ({
             "RCSBlock.v2", lexicon(
                 "thrust", 1,
                 "thrustOffset", V(-0.135,0,0),
-                "thrustDirections", list(
+                "thrustVectors", list(
                     V(0,1,0), V(0,-1,0), V(0,0,1), V(0,0,-1)
                 )
             ),
             "linearRCS", lexicon(
                 "thrust", 2,
                 "thrustOffset", V(0,0,0),
-                "thrustDirections", list(
+                "thrustVectors", list(
                     V(0,0,1)
                 )
             ),
             "MEMLander", lexicon(
                 "thrust", 2,
                 "thrustOffset", V(0,0,0),   //TODO
-                "thrustDirections", list(
+                "thrustVectors", list(
                     V(0,1,0), V(0,-1,0), V(0,0,1), V(0,0,-1)
                 )
             ),
             "vernierEngine", lexicon(
                 "thrust", 12,
                 "thrustOffset", V(0,0,0),   //TODO
-                "thrustDirections", list(
+                "thrustVectors", list(
                     V(0,0,1)
                 )
             )
@@ -42,6 +41,8 @@ global rcsLib to ({
         parameter partModule.
         
         local actuations to V(0,0,0).
+        // TODO: check if the game allows to tweak this values, they need to be enabled in the settings.
+        //       if they are not present then assume all actuations are enabled
         local showToggles to partModule:hasevent("show actuation toggles").
         
         if showToggles {
@@ -93,9 +94,9 @@ global rcsLib to ({
                     local thrustLimiter to partModule:getfield("thrust limiter") / 100.
                     local actuations to getEnabledActuations(partModule).
                     local PARTtoSHIP to rotationLib:partToShip(partItem).
-                    for dir in partData:thrustDirections {
+                    for tv in partData:thrustVectors {
                         // negative because the effect is in the opposite direction of the thrust
-                        local incidence to -vectorLib:roundVector((PARTtoSHIP*dir) * partData:thrust * thrustLimiter, 3).
+                        local incidence to ((PARTtoSHIP*tv) * partData:thrust * thrustLimiter).
                         if actuations:X = 1 {
                             addTotalThrust("X", incidence:X).
                         }

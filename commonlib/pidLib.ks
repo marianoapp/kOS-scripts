@@ -55,6 +55,22 @@ global pidLib to ({
             set pidY:kp to kps:Y.
             set pidZ:kp to kps:Z.
         }
+
+        local function setKis {
+            parameter kis.
+            
+            set pidX:ki to kis:X.
+            set pidY:ki to kis:Y.
+            set pidZ:ki to kis:Z.
+        }
+
+        local function setKds {
+            parameter kds.
+            
+            set pidX:kd to kds:X.
+            set pidY:kd to kds:Y.
+            set pidZ:kd to kds:Z.
+        }
         
         local function X {
             return pidX.
@@ -74,6 +90,8 @@ global pidLib to ({
             "setBounds", setBounds@,
             "setScalarBounds", setScalarBounds@,
             "setKps", setKps@,
+            "setKis", setKis@,
+            "setKds", setKds@,
             "X", X@,
             "Y", Y@,
             "Z", Z@
@@ -127,6 +145,20 @@ global pidLib to ({
             set pidX:kp to kps:X.
             set pidY:kp to kps:Y.
         }
+
+        local function setKis {
+            parameter kis.
+            
+            set pidX:ki to kis:X.
+            set pidY:ki to kis:Y.
+        }
+
+        local function setKds {
+            parameter kds.
+            
+            set pidX:kd to kds:X.
+            set pidY:kd to kds:Y.
+        }
         
         local function X {
             return pidX.
@@ -142,6 +174,8 @@ global pidLib to ({
             "setBounds", setBounds@,
             "setScalarBounds", setScalarBounds@,
             "setKps", setKps@,
+            "setKis", setKis@,
+            "setKds", setKds@,
             "X", X@,
             "Y", Y@
         ).

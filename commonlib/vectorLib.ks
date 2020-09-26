@@ -60,6 +60,26 @@ global vectorLib to ({
             1 / vector:Z
         ).
     }
+
+    local function addScalar {
+        parameter vector, scalar.
+        
+        return V(
+            vector:X + scalar,
+            vector:Y + scalar,
+            vector:Z + scalar
+        ).
+    }
+
+    local function elementWiseMin {
+        parameter vectorA, vectorB.
+        
+        return V(
+            min(vectorA:X, vectorB:X),
+            min(vectorA:Y, vectorB:Y),
+            min(vectorA:Z, vectorB:Z)
+        ).
+    }
     
     return lexicon(
         "absVector", absVector@,
@@ -67,6 +87,8 @@ global vectorLib to ({
         "bound", bound@,
         "boundScalar", boundScalar@,
         "elementWiseProduct", elementWiseProduct@,
-        "inverse", inverse@
+        "inverse", inverse@,
+        "addScalar", addScalar@,
+        "elementWiseMin", elementWiseMin@
     ).
 }):call().

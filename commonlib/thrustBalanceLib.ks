@@ -9,7 +9,7 @@ runoncepath("commonlib/grapplerLib").
 
 // https://physics.stackexchange.com/questions/80542/calculating-torque-in-3d
 
-global thrustLib to ({
+global thrustBalanceLib to ({
     // adjust the thrust of all active engines to achieve rotational equilibrium
     // only works for engines in a single plane, and the plane must contain the CoM
     local function simpleThrustBalancer
