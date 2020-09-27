@@ -1,7 +1,7 @@
 @LAZYGLOBAL off.
 
 // import libraries
-runoncepath("commonlib/rotationLib").
+runoncepath("/commonlib/rotationLib").
 
 global rcsLib to ({
     local function getPartsMetadata {

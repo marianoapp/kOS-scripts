@@ -1,7 +1,7 @@
 @LAZYGLOBAL off.
 
 // import libraries
-runoncepath("commonlib/utilsLib").
+runoncepath("/commonlib/utilsLib").
 
 global nodesLib to ({
     // assumes inverse rotation mode (ie below 100km from the surface)

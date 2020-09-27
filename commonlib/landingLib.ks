@@ -1,12 +1,12 @@
 @LAZYGLOBAL off.
 
 // import libraries
-runoncepath("commonlib/orbitLib").
-runoncepath("commonlib/simulationLib").
-runoncepath("commonlib/timeLib").
-runoncepath("commonlib/nodesLib").
-runoncepath("commonlib/utilsLib").
-runoncepath("commonlib/optimizationLib").
+runoncepath("/commonlib/orbitLib").
+runoncepath("/commonlib/simulationLib").
+runoncepath("/commonlib/timeLib").
+runoncepath("/commonlib/nodesLib").
+runoncepath("/commonlib/utilsLib").
+runoncepath("/commonlib/optimizationLib").
 
 global landingLib to ({
     local function findOrbitImpactPosition {

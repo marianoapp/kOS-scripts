@@ -1,11 +1,11 @@
 @LAZYGLOBAL off.
 
 // import libraries
-runoncepath("commonlib/pidLib").
-runoncepath("commonlib/vectorLib").
-runoncepath("commonlib/calculusLib").
-runoncepath("commonlib/rcsLib").
-runoncepath("commonlib/asyncLib").
+runoncepath("/commonlib/pidLib").
+runoncepath("/commonlib/vectorLib").
+runoncepath("/commonlib/calculusLib").
+runoncepath("/commonlib/rcsLib").
+runoncepath("/commonlib/asyncLib").
 
 global translationLib to ({
     local pidTuneMode to lexicon(

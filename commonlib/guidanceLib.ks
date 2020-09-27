@@ -1,9 +1,9 @@
 @LAZYGLOBAL off.
 
 // import libraries
-runoncepath("commonlib/calculusLib").
-runoncepath("commonlib/rcsLib").
-runoncepath("commonlib/pidLib").
+runoncepath("/commonlib/calculusLib").
+runoncepath("/commonlib/rcsLib").
+runoncepath("/commonlib/pidLib").
 
 global guidanceLib to ({
     

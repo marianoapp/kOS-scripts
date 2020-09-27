@@ -1,7 +1,7 @@
 @LAZYGLOBAL off.
 
 // import libraries
-runoncepath("commonlib/asyncLib").
+runoncepath("/commonlib/asyncLib").
 
 global grapplerLib to ({
     local function getGrapplers {

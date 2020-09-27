@@ -1,11 +1,11 @@
 @LAZYGLOBAL off.
 
 // import libraries
-runoncepath("commonlib/translationLib").
-runoncepath("commonlib/rotationLib").
-runoncepath("commonlib/steeringLib").
-runoncepath("commonlib/asyncLib").
-runoncepath("commonlib/grapplerLib").
+runoncepath("/commonlib/translationLib").
+runoncepath("/commonlib/rotationLib").
+runoncepath("/commonlib/steeringLib").
+runoncepath("/commonlib/asyncLib").
+runoncepath("/commonlib/grapplerLib").
 
 global grapplerDockingLib to ({
     local function dock

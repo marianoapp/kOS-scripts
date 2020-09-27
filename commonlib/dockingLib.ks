@@ -1,11 +1,11 @@
 @LAZYGLOBAL off.
 
 // import libraries
-runoncepath("commonlib/translationLib").
-runoncepath("commonlib/rotationLib").
-runoncepath("commonlib/steeringLib").
-runoncepath("commonlib/asyncLib").
-runoncepath("commonlib/schedulingLib").
+runoncepath("/commonlib/translationLib").
+runoncepath("/commonlib/rotationLib").
+runoncepath("/commonlib/steeringLib").
+runoncepath("/commonlib/asyncLib").
+runoncepath("/commonlib/schedulingLib").
 
 global dockingLib to ({
     // roll match modes
@@ -84,7 +84,6 @@ global dockingLib to ({
         if partsMetadata:haskey(portPart:name) {
             set frontOffset to partsMetadata[portPart:name]["frontOffset"].
         }
-        // local frontOffset to 1.
 
         return portPart:portfacing:forevector:normalized * frontOffset.
     }
@@ -104,11 +103,11 @@ global dockingLib to ({
         local stopCondition to { return stopFlag or abort. }.
         local referencePosition to (-ship:facing) * (ownPort:position + getPortFrontPosition(ownPort)).
 
-        clearvecdraws().
-        local sp to vecdrawargs(v(0,0,0), v(0,0,0), green, "", 1, true).
-        set sp:vecupdater to { return facing*referencePosition. }.
-        local sp2 to vecdrawargs(v(0,0,0), v(0,0,0), red, "", 1, true).
-        set sp2:vecupdater to targetPosition.
+        // clearvecdraws().
+        // local sp to vecdrawargs(v(0,0,0), v(0,0,0), green, "", 1, true).
+        // set sp:vecupdater to { return facing*referencePosition. }.
+        // local sp2 to vecdrawargs(v(0,0,0), v(0,0,0), red, "", 1, true).
+        // set sp2:vecupdater to targetPosition.
 
         local tp to translationLib:translateToPosition(targetPosition, stopCondition, referencePosition, maxSpeed).
         // when close enough approach and dock
@@ -122,7 +121,7 @@ global dockingLib to ({
         tp:start().
         
         unlock steering.
-        clearvecdraws().
+        //clearvecdraws().
     }
     
     return lexicon(
