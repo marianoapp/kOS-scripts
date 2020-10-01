@@ -96,7 +96,7 @@ global rcsLib to ({
                     local PARTtoSHIP to rotationLib:partToShip(partItem).
                     for tv in partData:thrustVectors {
                         // negative because the effect is in the opposite direction of the thrust
-                        local incidence to ((PARTtoSHIP*tv) * partData:thrust * thrustLimiter).
+                        local incidence to -((PARTtoSHIP*tv) * partData:thrust * thrustLimiter).
                         if actuations:X = 1 {
                             addTotalThrust("X", incidence:X).
                         }
