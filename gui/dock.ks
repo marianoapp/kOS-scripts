@@ -5,7 +5,7 @@ parameter standalone is true.
 // import libraries
 runoncepath("/commonlib/guiLib").
 runoncepath("/commonlib/dockingLib").
-runoncepath("commonlib/streamsLib").
+runoncepath("/commonlib/streamsLib").
 
 if standalone {
     abort off.
@@ -16,9 +16,9 @@ streamsLib:initGuiStreams().
 global exitCode to 0.
 
 // draw gui
-local baseGui to guiLib:createBaseGui().
-local dockGui IS GUI(200).
-local containerBox to dockGui:addvlayout().
+local mainGui IS GUI(200).
+local baseGui to guiLib:createBaseGui(mainGui).
+local containerBox to mainGui:addvlayout().
 
 // roll mode option group
 containerBox:addlabel("Roll matching mode").
@@ -64,13 +64,5 @@ baseGui:addHandler("dockButton:onclick", {
 }).
 
 
-
-// show the gui
-dockGui:show().
-
 // start handling events
 baseGui:start().
-
-// destroy the gui
-dockGui:hide().
-dockGui:dispose().

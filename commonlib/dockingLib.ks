@@ -112,9 +112,9 @@ global dockingLib to ({
         local tp to translationLib:translateToPosition(targetPosition, stopCondition, referencePosition, maxSpeed).
         // when close enough approach and dock
         local sequence to schedulingLib:sequenceScheduler().
-        sequence:addEvent({ return tp:getDistance() < 0.25. }, { set positionOffset to 0.6. }).
+        sequence:addEvent({ return tp:getDistance():mag < 0.25. }, { set positionOffset to 0.6. }).
         sequence:addEvent({ return ownPort:haspartner. }, { }).    // do nothing
-        sequence:addEvent({ return tp:getDistance() < 0.4. }, { set stopFlag to true. }).
+        sequence:addEvent({ return tp:getDistance():mag < 0.4. }, { set stopFlag to true. }).
         //sequence:addEvent({ return tp:getDistance() < 0.01. }, { set stopFlag to true. }).
 
         asyncLib:await(steerTask).

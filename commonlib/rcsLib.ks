@@ -41,7 +41,7 @@ global rcsLib to ({
         parameter partModule.
         
         local actuations to V(0,0,0).
-        // TODO: check if the game allows to tweak this values, they need to be enabled in the settings.
+        // TODO: check if the game allows to tweak these values, they need to be enabled in the settings.
         //       if they are not present then assume all actuations are enabled
         local showToggles to partModule:hasevent("show actuation toggles").
         

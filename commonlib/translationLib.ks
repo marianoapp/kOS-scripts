@@ -70,7 +70,7 @@ global translationLib to ({
         // print "Factor: " + round(factor, 4).
         
         local function start {
-             local velObj to calculusLib:vectorDerivative().
+            local velObj to calculusLib:vectorDerivative().
             local currentTime to 0.
             local currentPosition to V(0,0,0).
             local currentPath to V(0,0,0).
@@ -116,7 +116,7 @@ global translationLib to ({
         }
 
         local function getDistance {
-            return distanceToTarget:mag.
+            return distanceToTarget.
         }
         
         return lexicon(

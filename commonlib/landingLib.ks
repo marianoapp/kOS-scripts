@@ -102,7 +102,9 @@ global landingLib to ({
         // make sure all the following rotations are created in the same tick
         wait 0.
 
-        local nodeUT to time:seconds + 60.
+        // should be enough time for at least 10 loops
+        // (add a constant because steering takes a fixed amount of time)
+        local nodeUT to time:seconds + (25e3 / config:ipu) + 10.
 
         local fixRotFunc to utilsLib:getFixRotFunction().
         local fixRot to fixRotFunc(nodeUT).
@@ -163,11 +165,9 @@ global landingLib to ({
             set nodeDV to SURFtoNODE * surfDV.
             set deorbitNode:prograde to nodeDV:Z.
             set deorbitNode:normal to nodeDV:Y.
-            
-            // wait until ag1.
-            // ag1 off.
 
             if deorbitNode:burnvector:mag > 1000 {
+                // TODO: use stderr
                 print "Something went wrong".
                 remove nextnode.
                 break.
@@ -207,6 +207,11 @@ global landingLib to ({
         local simStartTime to 0.
         local loopCount to 0.
 
+        local landingProgressUpdater to {
+            parameter landingSimInfo.
+            progressUpdater(lexicon("landingSimInfo", landingSimInfo)).
+        }.
+
         until false {
             set loopCount to loopCount + 1.
 
@@ -234,7 +239,7 @@ global landingLib to ({
                 set simStartTime to intersectTime - utilsLib:calculateBurnTime(burnEndState[2]:mag, engineIsp, shipThrust, burnEndState[3]).
             }
             set landingInfo to calculateLandingBase(simStartTime, shipThrust, engineIsp, burnEndState[3], settings[3], settings[4],
-                                                    getPosVelAtTime, getPositionError, progressUpdater).
+                                                    getPosVelAtTime, getPositionError, landingProgressUpdater).
             set simStartTime to landingInfo:burnStartTime.
 
             // refresh rotations
@@ -246,7 +251,11 @@ global landingLib to ({
             // calculate error
             set error to RAWtoSURF * (landingInfo:landingPosition - targetPosition).
 
-            print "PE: " + round(error:X, 2) + ", NE: " + round(error:Y, 2) + ", RE: " + round(error:Z, 2) + "        " at (0,7).
+            progressUpdater(lexicon("progradeError", error:X,
+                                    "normalError", error:Y,
+                                    "nodeDV", nodeDV,
+                                    "deorbitThrust", deorbitThrust,
+                                    "loopCount", loopCount)).
 
             if abs(error:X) > settings[0] or abs(error:Y) > (settings[0] / 2) {
                 set surfDV to NODEtoSURF * nodeDV.
@@ -258,13 +267,10 @@ global landingLib to ({
                 virtualNode:setDeltaV(nodeDV).
 
                 if nodeDV:mag > 1000 {
+                    // TODO: use stderr
                     print "Something went wrong".
                     break.
                 }
-
-                //print "PE: " + round(error:X, 2) + ", NE: " + round(error:Y, 2) + ", RE: " + round(error:Z, 2) + "        " at (0,7).
-                print "VN: " + nodeDV + "        " at (0,8).
-                print "DT: " + round(deorbitThrust, 4) + "        " at (0,9).
             }
             else {
                 set settingsIndex to settingsIndex + 1.
@@ -276,8 +282,6 @@ global landingLib to ({
                 }
             }
         }
-
-        print "Node count: " + allnodes:length.
 
         //calculate the position and velocity along the orbit for fine tunning corrections after the burn
         local trajectoryData to list().
@@ -295,8 +299,6 @@ global landingLib to ({
         for nodeItem in allnodes {
             remove nodeItem.
         }
-
-        print "Loop count: " + loopCount + "           ".
 
         return lexicon(
             "burnVector", burnVector,

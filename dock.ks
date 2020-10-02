@@ -3,13 +3,19 @@
 parameter rollMatchMode, maxSpeed.
 
 // import libraries
-runoncepath("commonlib/dockingLib").
-runoncepath("commonlib/streamsLib").
-
-streamsLib:initConsoleStreams().
-global exitCode to 0.
+runoncepath("/commonlib/dockingLib").
+runoncepath("/commonlib/streamsLib").
 
 abort off.
+
+streamsLib:initConsoleStreams().
+global exitCode to -1.
+
+
+local function exit {
+    parameter paramExitCode.
+    set exitCode to paramExitCode.
+}
 
 if hastarget {
     local ownPort to false.
@@ -28,7 +34,7 @@ if hastarget {
         }
         else {
             stderr("No docking ports on this vessel").
-            set exitCode to 2.
+            exit(2).
         }
     }
 
@@ -53,18 +59,18 @@ if hastarget {
 
         // dock with the target
         dockingLib:dock(ownPort, targetPort, rollMatchMode, maxSpeed).
-        set exitCode to 0.
+        exit(0).
         
         rcs off.
         sas on.
     }
     else {
         stderr("No docking ports on target vessel").
-        set exitCode to 3.
+        exit(3).
     }
 }
 else {
     stderr("No target selected").
-    set exitCode to 1.
+    exit(1).
 }
 

@@ -2,6 +2,8 @@
 
 global guiLib to ({
     local function createBaseGui {
+        parameter mainGui.
+
         local messageQueue to queue().
         local messageHandlers to lexicon().
         local exitLoop to false.
@@ -32,6 +34,9 @@ global guiLib to ({
         local function start {
             addSpecialHandlers().
 
+            // show the gui
+            mainGui:show().
+
             // message loop
             until exitLoop {
                 wait until messageQueue:length > 0.
@@ -44,6 +49,10 @@ global guiLib to ({
                     handleMessage(messageParams, messageHandlers[messageName]).
                 }
             }
+
+            // destroy the gui
+            mainGui:hide().
+            mainGui:dispose().
         }
 
         local function handleMessage {
