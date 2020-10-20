@@ -70,6 +70,9 @@ local function landAtPosition {
         set targetPosition to targetPosition + (targetPosition:normalized * altitudeMargin).
     }
 
+    local burnDirection to ship:facing.
+    lock steering to burnDirection.
+
     local progressUpdater to {
         parameter simInfo.
 
@@ -83,6 +86,11 @@ local function landAtPosition {
             stdout("ManeuverDV: " + vectorLib:roundVector(simInfo:nodeDV, 4) + "        ", 0,4).
             stdout("DeorbitThrust: " + round(simInfo:deorbitThrust, 4) + "        ", 0,5).
             stdout("LoopCount: " + simInfo:loopCount + "  ", 0,6).
+
+            // start steering when the solution gets close enough
+            if simInfo:progradeError < 5000 and simInfo:normalError < 500 {
+                set burnDirection to lookdirup(simInfo:burnVector, ship:facing:topvector).
+            }
         }
     }.
 

@@ -254,6 +254,7 @@ global landingLib to ({
             progressUpdater(lexicon("progradeError", error:X,
                                     "normalError", error:Y,
                                     "nodeDV", nodeDV,
+                                    "burnVector", burnVector,
                                     "deorbitThrust", deorbitThrust,
                                     "loopCount", loopCount)).
 

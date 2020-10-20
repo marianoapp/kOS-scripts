@@ -54,20 +54,19 @@ global simulationLib to ({
 
         local calculateAcceleration to getCalcAccRetroThrustFunction(currentBody, shipThrust).
 
-        // TODO: find a better criteria to detect if the simulated vessel is spinning in place
-        local function loopCondition {
+        local loopCondition to {
             parameter simState, simPreviousState.
-            return simState[2]:mag < 0.1 or (simState[2]:mag > simPreviousState[2]:mag) or abs(vang(simState[2], simPreviousState[2])) > 5.
-        }
+            return not (simState[2]:mag > 0.1 and simState[2]:mag <= simPreviousState[2]:mag and vang(simState[2], simPreviousState[2]) <= 5).
+        }.
 
-        local function refineCondition {
+        local refineCondition to {
             parameter simState.
             return simState[2]:mag >= 0.1.
-        }
+        }.
 
         return simulate(lexicon("startTime", startTime, "startPos", startPos, "startVelocity", startVelocity, "startMass", startMass),
                         lexicon("shipThrust", shipThrust, "engineIsp", engineIsp),
-                        lexicon("minDt", minDt, "calculateAcceleration", calculateAcceleration@, "loopCondition", loopCondition@, "refineCondition", refineCondition@)).
+                        lexicon("minDt", minDt, "calculateAcceleration", calculateAcceleration, "loopCondition", loopCondition, "refineCondition", refineCondition)).
     }
 
     local function simulateThrust {
