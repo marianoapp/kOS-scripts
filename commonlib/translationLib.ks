@@ -60,54 +60,36 @@ global translationLib to ({
             
         local distanceToTarget to V(1000,1000,1000).    // just a big number
         local currentVelocity to V(0,0,0).
-        // TODO: add an integral component to compensate for things like gravity (maybe only when suborbital?)
         local pidsInfo to initializePids(pidTuneMode:SetpointTracking).
         local pids to pidsInfo[0].
         local minAxisAccs to pidsInfo[1].
         local factor to min(min(minAxisAccs:X, minAxisAccs:Y), minAxisAccs:Z) / 4.
-        local alterFactor to true.
-        // print "Accs: " + vectorLib:roundVector(minAxisAccs, 4).
-        // print "Factor: " + round(factor, 4).
         
         local function start {
             local velObj to calculusLib:vectorDerivative().
             local currentTime to 0.
-            local currentPosition to V(0,0,0).
-            local currentPath to V(0,0,0).
             local desiredVelocity to V(0,0,0).
-            local PATHtoRAW to R(0,0,0).
-            local RAWtoPATH to R(0,0,0).
             
             // aliases of library functions to improve performance
             local velObj_calculate to velObj:calculate.
-            local pids_setpoint to pids:setpoint.
             local pids_update to pids:update.
             local shipCtrl to ship:control.
 
-            pids_setpoint(V(0,0,0)).
+            pids:setpoint(V(0,0,0)).
             
             // make sure the loop starts on the next tick so it doesn't get interrupted in the middle
             wait 0.
             
             until stopCondition() {
                 set currentTime to time:seconds.
-                set currentPosition to targetPosition().
                 
-                // update the path if it diverges too much from the previous one
-                if vang(currentPath, currentPosition) > 20 {
-                    set currentPath to currentPosition.
-                    set PATHtoRAW to lookdirup(currentPosition, facing:topvector).
-                    set RAWtoPATH to -PATHtoRAW.
-                }
-                
-                set distanceToTarget to RAWtoPATH * (currentPosition - facing*referencePosition).
+                set distanceToTarget to targetPosition() - facing*referencePosition.
                 set desiredVelocity to distanceToTarget:normalized * min(distanceToTarget:mag * factor, speedLimit).
 
                 // calculate the current velocity as dx/dt
                 set currentVelocity to -velObj_calculate(currentTime, distanceToTarget).
                 // compare the current velocity to the desired one and make corrections
-                // PATHtoSHIP = RAWtoSHIP * PATHtoRAW
-                set shipCtrl:translation to (-facing) * PATHtoRAW * pids_update(currentTime, currentVelocity - desiredVelocity).
+                set shipCtrl:translation to (-facing) * pids_update(currentTime, currentVelocity - desiredVelocity).
                 
                 wait 0.
             }.
