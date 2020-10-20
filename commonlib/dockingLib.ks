@@ -103,25 +103,17 @@ global dockingLib to ({
         local stopCondition to { return stopFlag or abort. }.
         local referencePosition to (-ship:facing) * (ownPort:position + getPortFrontPosition(ownPort)).
 
-        // clearvecdraws().
-        // local sp to vecdrawargs(v(0,0,0), v(0,0,0), green, "", 1, true).
-        // set sp:vecupdater to { return facing*referencePosition. }.
-        // local sp2 to vecdrawargs(v(0,0,0), v(0,0,0), red, "", 1, true).
-        // set sp2:vecupdater to targetPosition.
-
         local tp to translationLib:translateToPosition(targetPosition, stopCondition, referencePosition, maxSpeed).
         // when close enough approach and dock
         local sequence to schedulingLib:sequenceScheduler().
         sequence:addEvent({ return tp:getDistance():mag < 0.25. }, { set positionOffset to 0.6. }).
         sequence:addEvent({ return ownPort:haspartner. }, { }).    // do nothing
         sequence:addEvent({ return tp:getDistance():mag < 0.4. }, { set stopFlag to true. }).
-        //sequence:addEvent({ return tp:getDistance() < 0.01. }, { set stopFlag to true. }).
 
         asyncLib:await(steerTask).
         tp:start().
         
         unlock steering.
-        //clearvecdraws().
     }
     
     return lexicon(
