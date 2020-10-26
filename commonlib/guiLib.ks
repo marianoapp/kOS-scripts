@@ -2,11 +2,38 @@
 
 global guiLib to ({
     local function createBaseGui {
-        parameter mainGui.
+        parameter mainGui, title is "", startPos is list(-1,-1).
 
         local messageQueue to queue().
         local messageHandlers to lexicon().
         local exitLoop to false.
+
+        addTitleBar().
+        moveGui(startPos).
+
+        local function addTitleBar {
+            local titleBox to mainGui:addhlayout().
+            set titleBox:style:align to "right".
+            local titleLabel to titleBox:addlabel("<b>" + title + "</b>").
+            set titleLabel:style:textcolor to rgb(1,0.5,0).
+            local closeButton to titleBox:addbutton("x").
+            set closeButton:style:width to 25.
+            set closeButton:style:height to 25.
+            set closeButton:style:padding:left to 7.
+
+            set closeButton:onclick to { postMessage("exit"). }.
+        }
+
+        local function moveGui {
+            parameter position.
+            
+            if position[0] >= 0 {
+                set mainGui:X to position[0].
+            }
+            if position[1] >= 0 {
+                set mainGui:Y to position[1].
+            }
+        }
 
         local function addHandler {
             parameter messageName, handler.
@@ -46,7 +73,7 @@ global guiLib to ({
                 local messageParams to messageItem[1].
                 // if there's a handler for the message then call it
                 if messageHandlers:haskey(messageName) {
-                    handleMessage(messageParams, messageHandlers[messageName]).
+                    handleMessage(messageHandlers[messageName], messageParams).
                 }
             }
 
@@ -56,7 +83,7 @@ global guiLib to ({
         }
 
         local function handleMessage {
-            parameter messageParams, handler.
+            parameter handler, messageParams.
 
             local paramCount to messageParams:length.
             if paramCount = 0 {
@@ -80,6 +107,7 @@ global guiLib to ({
         }
 
         return lexicon(
+            "moveGui", moveGui@,
             "addHandler", addHandler@,
             "postMessage", postMessage@,
             "start", start@

@@ -1,6 +1,6 @@
 @LAZYGLOBAL off.
 
-parameter standalone is true.
+parameter standalone is true, startPos is list(-1,-1).
 
 // import libraries
 runoncepath("/commonlib/guiLib").
@@ -17,7 +17,7 @@ global exitCode to 0.
 
 // draw gui
 local mainGui IS GUI(200).
-local baseGui to guiLib:createBaseGui(mainGui).
+local baseGui to guiLib:createBaseGui(mainGui, "Docking", startPos).
 local containerBox to mainGui:addvlayout().
 
 // roll mode option group
