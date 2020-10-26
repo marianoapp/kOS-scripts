@@ -94,7 +94,11 @@ global dockingLib to ({
         ownPort:controlfrom().
         
         // turn the ship in the desired direction
-        local steerTask to steeringLib:steerToDelegateAsync(getSteeringDelegate(targetPort, rollMatchMode)).
+        //local steerTask to steeringLib:steerToDelegateAsync(getSteeringDelegate(targetPort, rollMatchMode)).
+        // >> workaround because using the above instruction it's impossible to unlock the steering afterwards
+        local steerDelegate to getSteeringDelegate(targetPort, rollMatchMode).
+        lock steering to steerDelegate().
+        local steerTask to steeringLib:getNewSteeringTask().
 
         // position the vessel just above the docking port
         local positionOffset to 1.

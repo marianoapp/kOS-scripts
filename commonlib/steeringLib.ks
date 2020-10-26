@@ -47,6 +47,10 @@ global steeringLib to ({
     local function isDone {
         return steeringmanager:angleerror > 0 and steeringmanager:angleerror < 20 and steeringmanager:rollerror < 20.
     }
+
+    local function getNewSteeringTask {
+        return asyncLib:newTask(isDone@).
+    }
     
     // local function getDoneCheck {
         // // the steering manager takes a few frames to start returning valid data
@@ -68,6 +72,7 @@ global steeringLib to ({
         "steerToConstant", steerToConstant@,
         "steerToConstantAsync", steerToConstantAsync@,
         "steerToDelegate", steerToDelegate@,
-        "steerToDelegateAsync", steerToDelegateAsync@
+        "steerToDelegateAsync", steerToDelegateAsync@,
+        "getNewSteeringTask", getNewSteeringTask@
     ).
 }):call().

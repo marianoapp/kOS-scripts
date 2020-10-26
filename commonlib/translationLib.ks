@@ -44,7 +44,6 @@ global translationLib to ({
         
         local pids to pidLib:pidVector(0.776, 0, 0, -1, 1).
 
-        // TODO: check if the 20 factor is too much or way too much
         local kiFactor to choose 1 if tuneMode = pidTuneMode:SetpointTracking else 5.
         local kis to kiFactor * 0.01210737 * availableAxisAccs.
         pids:setKis(kis).
