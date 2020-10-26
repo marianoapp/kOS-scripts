@@ -41,12 +41,7 @@ global guidanceLib to ({
             local pids to pidLib:pidVectorXY(0.03, 0.0002, 0).
             local offsetAnglesSin to V(0,0,0).
             local steeringDirection to ship:facing.
-            local shipFacing to ship:facing.
             local shipControl to ship:control.
-            
-            // position workaround
-            local shipBody to ship:body.
-            local lastPosition to V(0,0,0).
             
             set stopFlag to false.
             
@@ -67,14 +62,14 @@ global guidanceLib to ({
                     
             until stopFlag {
                 set currentTime to time:seconds.
-                set shipFacing to ship:facing.
             
+                // position error workaround
                 // set pos to targetVessel:position.
                 if targetVessel:unpacked {
                     set pos to targetVessel:position.
                 }
                 else {
-                    set pos to lastPosition + shipBody:position.
+                    set pos to targetVessel:position - (choose targetVessel:velocity:surface if altitude <= 100e3 else targetVessel:velocity:orbit) * 0.02.
                 }
                 set distanceToTarget to pos:mag.
                 
@@ -99,13 +94,13 @@ global guidanceLib to ({
                 
                 if useRCS {
                     // maneuvers (in SHIP frame)
-                    set maneuverAcceleration to (-shipFacing) * REF * maneuverAcceleration.
+                    set maneuverAcceleration to (-facing) * REF * maneuverAcceleration.
                     set shipControl:translation to V(
                         maneuverAcceleration:X / shipAcc:X,
                         maneuverAcceleration:Y / shipAcc:Y,
                         maneuverAcceleration:Z / shipAcc:Z
                     ).
-                    set steeringDirection to lookdirup(pos, shipFacing:topvector).
+                    set steeringDirection to lookdirup(pos, facing:topvector).
                 }
                 
                 if useSteering {
@@ -115,7 +110,7 @@ global guidanceLib to ({
                     
                     set steeringDirection to lookdirup(
                         REF * R(-arcsin(offsetAnglesSin:Y), arcsin(offsetAnglesSin:X), 0) * vectorZ,
-                        shipFacing:topvector
+                        facing:topvector
                     ).
                 }
                             
@@ -123,8 +118,6 @@ global guidanceLib to ({
                 set REF to pos:direction.
                 set xAxisREF to REF:starvector.
                 set yAxisREF to REF:topvector.
-
-                set lastPosition to targetVessel:position - shipBody:position.
 
                 wait 0.01.
             }

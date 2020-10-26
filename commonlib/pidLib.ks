@@ -182,6 +182,7 @@ global pidLib to ({
     }
     
     return lexicon(
-        "pidVector", pidVector@
+        "pidVector", pidVector@,
+        "pidVectorXY", pidVectorXY@
     ).
 }):call().
