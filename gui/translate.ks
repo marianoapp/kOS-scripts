@@ -20,8 +20,8 @@ local translationModesEnum to lexicon(
 ).
 
 // draw gui
-local mainGui IS GUI(200).
-local baseGui to guiLib:createBaseGui(mainGui, "Translation", startPos).
+local guiHandler to guiLib:createGuiHandler(list(200,0), "Translation", startPos).
+local mainGui to guiHandler:mainGui.
 local containerBox to mainGui:addvlayout().
 
 // mode option group
@@ -34,7 +34,7 @@ for mode in translationModesEnum:keys {
 
 // execute button
 local execButton to containerBox:addbutton("Execute").
-set execButton:onclick to { baseGui:postMessage("execButton:onclick"). }.
+set execButton:onclick to { guiHandler:postMessage("execButton:onclick"). }.
 
 // stop button
 local stopButton to mainGui:addbutton("Stop").
@@ -44,11 +44,11 @@ set stopButton:enabled to false.
 
 // add handlers
 on abort {
-    baseGui:postMessage("exit").
+    guiHandler:postMessage("exit").
     set exitCode to 1.
 }
 
-baseGui:addHandler("execButton:onclick", {
+guiHandler:addMessageHandler("execButton:onclick", {
     set containerBox:enabled to false.
     set stopButton:enabled to true.
 
@@ -61,4 +61,4 @@ baseGui:addHandler("execButton:onclick", {
 
 
 // start handling events
-baseGui:start().
+guiHandler:start().

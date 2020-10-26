@@ -16,8 +16,8 @@ streamsLib:initGuiStreams().
 global exitCode to 0.
 
 // draw gui
-local mainGui IS GUI(200).
-local baseGui to guiLib:createBaseGui(mainGui, "Docking", startPos).
+local guiHandler to guiLib:createGuiHandler(list(200,0), "Docking", startPos).
+local mainGui to guiHandler:mainGui.
 local containerBox to mainGui:addvlayout().
 
 // roll mode option group
@@ -40,23 +40,23 @@ set speedSlider:value to 1.
 
 // dock button
 local dockButton to containerBox:addbutton("Dock").
-set dockButton:onclick to { baseGui:postMessage("dockButton:onclick"). }.
+set dockButton:onclick to { guiHandler:postMessage("dockButton:onclick"). }.
 
 
 
 // add handlers
 on abort {
-    baseGui:postMessage("exit").
+    guiHandler:postMessage("exit").
     set exitCode to 1.
 }
 
-baseGui:addHandler("dockButton:onclick", {
+guiHandler:addMessageHandler("dockButton:onclick", {
     set containerBox:enabled to false.
 
     local rollMatchMode to dockingLib:rollMatchModeEnum[rollModeBox:radiovalue].
     runpath("/dock", rollMatchMode, speedSlider:value).
     if exitCode = 0 {
-        baseGui:postMessage("exit").
+        guiHandler:postMessage("exit").
     }
     else {
         set containerBox:enabled to true.
@@ -65,4 +65,4 @@ baseGui:addHandler("dockButton:onclick", {
 
 
 // start handling events
-baseGui:start().
+guiHandler:start().

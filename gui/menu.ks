@@ -15,21 +15,22 @@ streamsLib:initGuiStreams().
 global exitCode to 0.
 
 // draw gui
-local mainGui IS GUI(200).
-local baseGui to guiLib:createBaseGui(mainGui, "Menu").
+//local mainGui IS GUI(200).
+local guiHandler to guiLib:createGuiHandler(list(200,0), "Menu").
+local mainGui to guiHandler:mainGui.
 local containerBox to mainGui:addvlayout().
 
 local rowBox1 to containerBox:addhlayout().
 local dockButton to rowBox1:addbutton("Dock").
-set dockButton:onclick to { baseGui:postMessage("dockButton:onclick"). }.
+set dockButton:onclick to { guiHandler:postMessage("dockButton:onclick"). }.
 local landButton to rowBox1:addbutton("Land").
-set landButton:onclick to { baseGui:postMessage("landButton:onclick"). }.
+set landButton:onclick to { guiHandler:postMessage("landButton:onclick"). }.
 local transButton to rowBox1:addbutton("Trans").
-set transButton:onclick to { baseGui:postMessage("transButton:onclick"). }.
+set transButton:onclick to { guiHandler:postMessage("transButton:onclick"). }.
 
 // add handlers
 on abort {
-    baseGui:postMessage("exit").
+    guiHandler:postMessage("exit").
 }
 
 function getChildWindowPos {
@@ -37,17 +38,17 @@ function getChildWindowPos {
     return list(mainGui:X, mainGui:Y + 85).
 }
 
-baseGui:addHandler("dockButton:onclick", {
+guiHandler:addMessageHandler("dockButton:onclick", {
     set containerBox:enabled to false.
     runpath("/gui/dock", false, getChildWindowPos()).
     set containerBox:enabled to true.
 }).
-baseGui:addHandler("landButton:onclick", {
+guiHandler:addMessageHandler("landButton:onclick", {
     set containerBox:enabled to false.
     runpath("/gui/land", false, getChildWindowPos()).
     set containerBox:enabled to true.
 }).
-baseGui:addHandler("transButton:onclick", {
+guiHandler:addMessageHandler("transButton:onclick", {
     set containerBox:enabled to false.
     runpath("/gui/translate", false, getChildWindowPos()).
     set containerBox:enabled to true.
@@ -55,4 +56,4 @@ baseGui:addHandler("transButton:onclick", {
 
 
 // start handling events
-baseGui:start().
+guiHandler:start().

@@ -15,9 +15,8 @@ streamsLib:initGuiStreams().
 global exitCode to 0.
 
 // draw gui
-local mainGui IS GUI(200).
-local baseGui to guiLib:createBaseGui(mainGui, "Landing", startPos).
-
+local guiHandler to guiLib:createGuiHandler(list(200,0), "Landing", startPos).
+local mainGui to guiHandler:mainGui.
 local containerBox to mainGui:addvlayout().
 
 // land mode option group
@@ -51,7 +50,7 @@ set altSlider:value to 5.
 
 // land button
 local landButton to containerBox:addbutton("Land").
-set landButton:onclick to { baseGui:postMessage("landButton:onclick"). }.
+set landButton:onclick to { guiHandler:postMessage("landButton:onclick"). }.
 
 // default settings
 set optLandNow:pressed to true.
@@ -59,11 +58,11 @@ set optLandNow:pressed to true.
 
 // add handlers
 on abort {
-    baseGui:postMessage("exit").
+    guiHandler:postMessage("exit").
     set exitCode to 1.
 }
 
-baseGui:addHandler("landButton:onclick", {
+guiHandler:addMessageHandler("landButton:onclick", {
     local landingMode to 0.
     local targetLandingPosition to V(0,0,0).
 
@@ -95,7 +94,7 @@ baseGui:addHandler("landButton:onclick", {
 
         runpath("/land", landingMode, altSlider:value, targetLandingPosition).
         if exitCode = 0 {
-            baseGui:postMessage("exit").
+            guiHandler:postMessage("exit").
         }
         else {
             set containerBox:enabled to true.
@@ -105,4 +104,4 @@ baseGui:addHandler("landButton:onclick", {
 
 
 // start handling events
-baseGui:start().
+guiHandler:start().

@@ -1,9 +1,10 @@
 @LAZYGLOBAL off.
 
 global guiLib to ({
-    local function createBaseGui {
-        parameter mainGui, title is "", startPos is list(-1,-1).
+    local function createGuiHandler {
+        parameter size, title is "", startPos is list(-1,-1).
 
+        local mainGui IS GUI(size[0], size[1]).
         local messageQueue to queue().
         local messageHandlers to lexicon().
         local exitLoop to false.
@@ -35,7 +36,7 @@ global guiLib to ({
             }
         }
 
-        local function addHandler {
+        local function addMessageHandler {
             parameter messageName, handler.
             
             if not messageHandlers:haskey(messageName) {
@@ -55,7 +56,7 @@ global guiLib to ({
         }
 
         local function addSpecialHandlers {
-            addHandler("exit", { set exitLoop to true. }).
+            addMessageHandler("exit", { set exitLoop to true. }).
         }
 
         local function start {
@@ -107,14 +108,14 @@ global guiLib to ({
         }
 
         return lexicon(
-            "moveGui", moveGui@,
-            "addHandler", addHandler@,
+            "mainGui", mainGui,
+            "addMessageHandler", addMessageHandler@,
             "postMessage", postMessage@,
             "start", start@
         ).
     }
 
     return lexicon(
-        "createBaseGui", createBaseGui@
+        "createGuiHandler", createGuiHandler@
     ).
 }):call().
