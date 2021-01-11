@@ -39,10 +39,55 @@ global utilsLib to ({
         return shipThrust.
     }
 
+    local function memoryLog {
+        parameter fileName.
+
+        local data to list().
+
+        local function format {
+            parameter value.
+            
+            if (value:istype("Vector")) {
+                return list(value:X, value:Y, value:Z):join(",").
+            }
+            else {
+                return value.
+            }
+        }
+
+        local function append {
+            parameter value.
+            data:add(format(value)).
+        }
+
+        local function appendMany {
+            parameter valueList.
+
+            local lineData to list().
+            
+            for value in valueList {
+                lineData:add(format(value)).
+            }
+
+            data:add(lineData:join(",")).
+        }
+
+        local function flush {
+            log data:join(char(10)) to fileName.
+        }
+
+        return lexicon(
+            "append", append@,
+            "appendMany", appendMany@,
+            "flush", flush@
+        ).
+    }
+
     return lexicon(
         "getOrbitRot", getOrbitRot@,
         "getFixRotFunction", getFixRotFunction@,
         "calculateBurnTime", calculateBurnTime@,
-        "calculateThrustValue", calculateThrustValue@
+        "calculateThrustValue", calculateThrustValue@,
+        "memoryLog", memoryLog@
     ).
 }):call().
