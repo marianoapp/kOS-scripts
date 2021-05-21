@@ -1,5 +1,6 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS utilsLib
 global utilsLib to ({
     local function getOrbitRot {       
         parameter UT.

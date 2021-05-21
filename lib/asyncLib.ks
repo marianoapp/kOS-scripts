@@ -1,5 +1,6 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS asyncLib
 global asyncLib to ({
     local function newTask {
         parameter isDone.           // () => boolean

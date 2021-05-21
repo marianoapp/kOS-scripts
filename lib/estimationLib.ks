@@ -1,5 +1,6 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS estimationLib
 global estimationLib to ({
     local function forwardLinearInterpolator {
         parameter dataList.

@@ -3,8 +3,8 @@
 parameter mode.
 
 // import libraries
-runoncepath("/commonlib/translationLib").
-runoncepath("/commonlib/streamsLib").
+runoncepath("/lib/translationLib").
+runoncepath("/lib/streamsLib").
 
 abort off.
 ag10 off.

@@ -1,5 +1,6 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS pidLib
 global pidLib to ({
     local function pidVector {
         parameter kp, ki is 0, kd is 0, minOutput is 0, maxOutput is 0.

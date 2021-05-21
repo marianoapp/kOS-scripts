@@ -1,11 +1,12 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS dockingLib, translationLib, rotationLib, steeringLib, asyncLib, schedulingLib
 // import libraries
-runoncepath("/commonlib/translationLib").
-runoncepath("/commonlib/rotationLib").
-runoncepath("/commonlib/steeringLib").
-runoncepath("/commonlib/asyncLib").
-runoncepath("/commonlib/schedulingLib").
+runoncepath("/lib/translationLib").
+runoncepath("/lib/rotationLib").
+runoncepath("/lib/steeringLib").
+runoncepath("/lib/asyncLib").
+runoncepath("/lib/schedulingLib").
 
 global dockingLib to ({
     // roll match modes

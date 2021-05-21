@@ -1,5 +1,6 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS timeLib
 global timeLib to ({
     local function alignTimestamp {
         parameter timeValue.

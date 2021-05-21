@@ -1,7 +1,8 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS grapplerLib, asyncLib
 // import libraries
-runoncepath("/commonlib/asyncLib").
+runoncepath("/lib/asyncLib").
 
 global grapplerLib to ({
     local function getGrapplers {

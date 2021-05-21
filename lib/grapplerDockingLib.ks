@@ -1,11 +1,12 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS grapplerDockingLib, translationLib, rotationLib, steeringLib, asyncLib, grapplerLib
 // import libraries
-runoncepath("/commonlib/translationLib").
-runoncepath("/commonlib/rotationLib").
-runoncepath("/commonlib/steeringLib").
-runoncepath("/commonlib/asyncLib").
-runoncepath("/commonlib/grapplerLib").
+runoncepath("/lib/translationLib").
+runoncepath("/lib/rotationLib").
+runoncepath("/lib/steeringLib").
+runoncepath("/lib/asyncLib").
+runoncepath("/lib/grapplerLib").
 
 global grapplerDockingLib to ({
     local function dock

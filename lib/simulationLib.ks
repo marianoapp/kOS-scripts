@@ -1,5 +1,6 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS simulationLib
 global simulationLib to ({
     local function getCalcAccRetroThrustFunction {
         parameter currentBody, shipThrust.

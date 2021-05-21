@@ -1,5 +1,6 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS rotationLib
 global rotationLib to ({
     local function shipToRaw {
         return facing.

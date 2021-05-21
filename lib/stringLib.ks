@@ -1,5 +1,6 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS stringLib
 global stringLib to ({
     local function findAll {
         parameter content, searchFor.

@@ -1,6 +1,6 @@
 @LAZYGLOBAL off.
 
-
+// #EXTERNAL_IDS statisticsLib
 global statisticsLib to ({
     local function movingAvgVector {
         parameter maxCount.

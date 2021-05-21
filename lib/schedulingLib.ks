@@ -1,5 +1,6 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS schedulingLib
 global schedulingLib to ({
     local function timeoutScheduler {
         parameter action, timeout.

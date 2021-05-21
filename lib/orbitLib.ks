@@ -1,5 +1,6 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS orbitLib
 global orbitLib to ({
     local function findOrbitAltitudeIntersectionTime {
         parameter orbitPatch, referenceTrueAnomaly, intersectAltitude is 0.

@@ -1,11 +1,12 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS thrustBalanceLib, translationLib, rotationLib, steeringLib, asyncLib, grapplerLib
 // import libraries
-runoncepath("/commonlib/translationLib").
-runoncepath("/commonlib/rotationLib").
-runoncepath("/commonlib/steeringLib").
-runoncepath("/commonlib/asyncLib").
-runoncepath("/commonlib/grapplerLib").
+runoncepath("/lib/translationLib").
+runoncepath("/lib/rotationLib").
+runoncepath("/lib/steeringLib").
+runoncepath("/lib/asyncLib").
+runoncepath("/lib/grapplerLib").
 
 // https://physics.stackexchange.com/questions/80542/calculating-torque-in-3d
 

@@ -1,7 +1,8 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS steeringLib, asyncLib
 // import libraries
-runoncepath("/commonlib/asyncLib").
+runoncepath("/lib/asyncLib").
 
 global steeringLib to ({
     local function getDirectionNoRoll {

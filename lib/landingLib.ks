@@ -1,12 +1,13 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS landingLib, orbitLib, simulationLib, timeLib, nodesLib, utilsLib, optimizationLib
 // import libraries
-runoncepath("/commonlib/orbitLib").
-runoncepath("/commonlib/simulationLib").
-runoncepath("/commonlib/timeLib").
-runoncepath("/commonlib/nodesLib").
-runoncepath("/commonlib/utilsLib").
-runoncepath("/commonlib/optimizationLib").
+runoncepath("/lib/orbitLib").
+runoncepath("/lib/simulationLib").
+runoncepath("/lib/timeLib").
+runoncepath("/lib/nodesLib").
+runoncepath("/lib/utilsLib").
+runoncepath("/lib/optimizationLib").
 
 global landingLib to ({
     local function findOrbitImpactPosition {

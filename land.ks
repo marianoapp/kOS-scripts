@@ -5,12 +5,12 @@ parameter landingMode,                  // Scalar       one of landingModeEnum v
           targetPosition is V(0,0,0).   // Vector       target position in BODY-RAW coordinates
 
 // import libraries
-runoncepath("/commonlib/landingLib").
-runoncepath("/commonlib/streamsLib").
-runoncepath("/commonlib/schedulingLib").
-runoncepath("/commonlib/estimationLib").
-runoncepath("/commonlib/translationLib").
-runoncepath("/commonlib/vectorLib").
+runoncepath("/lib/landingLib").
+runoncepath("/lib/streamsLib").
+runoncepath("/lib/schedulingLib").
+runoncepath("/lib/estimationLib").
+runoncepath("/lib/translationLib").
+runoncepath("/lib/vectorLib").
 
 local landingModeEnum to lexicon(
     "LandNow", 1,

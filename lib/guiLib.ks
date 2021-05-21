@@ -1,5 +1,6 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS guiLib
 global guiLib to ({
     local function createGuiHandler {
         parameter size, title is "", startPos is list(-1,-1).

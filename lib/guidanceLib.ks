@@ -1,12 +1,12 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS guidanceLib, calculusLib, rcsLib, pidLib
 // import libraries
-runoncepath("/commonlib/calculusLib").
-runoncepath("/commonlib/rcsLib").
-runoncepath("/commonlib/pidLib").
+runoncepath("/lib/calculusLib").
+runoncepath("/lib/rcsLib").
+runoncepath("/lib/pidLib").
 
 global guidanceLib to ({
-    
     local function PN {
         parameter targetVessel, useRCS is false, useSteering to false.
         

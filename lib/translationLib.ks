@@ -1,11 +1,12 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS translationLib, pidLib, vectorLib, calculusLib, rcsLib, asyncLib
 // import libraries
-runoncepath("/commonlib/pidLib").
-runoncepath("/commonlib/vectorLib").
-runoncepath("/commonlib/calculusLib").
-runoncepath("/commonlib/rcsLib").
-runoncepath("/commonlib/asyncLib").
+runoncepath("/lib/pidLib").
+runoncepath("/lib/vectorLib").
+runoncepath("/lib/calculusLib").
+runoncepath("/lib/rcsLib").
+runoncepath("/lib/asyncLib").
 
 global translationLib to ({
     local pidTuneMode to lexicon(

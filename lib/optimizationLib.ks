@@ -1,5 +1,6 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS optimizationLib
 global optimizationLib to ({
     local function scalarErrorMinNR {
         parameter deltaFallbackFunc.

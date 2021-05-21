@@ -1,7 +1,8 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS dependencyLib, stringLib
 // import libraries
-runoncepath("/commonlib/stringLib").
+runoncepath("/lib/stringLib").
 
 global dependencyLib to ({
     local function getDependenciesRecursive {

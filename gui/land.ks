@@ -3,8 +3,8 @@
 parameter standalone is true, startPos is list(-1,-1).
 
 // import libraries
-runoncepath("/commonlib/guiLib").
-runoncepath("/commonlib/streamsLib").
+runoncepath("/lib/guiLib").
+runoncepath("/lib/streamsLib").
 
 if standalone {
     abort off.

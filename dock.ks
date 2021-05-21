@@ -3,8 +3,8 @@
 parameter rollMatchMode, maxSpeed.
 
 // import libraries
-runoncepath("/commonlib/dockingLib").
-runoncepath("/commonlib/streamsLib").
+runoncepath("/lib/dockingLib").
+runoncepath("/lib/streamsLib").
 
 abort off.
 

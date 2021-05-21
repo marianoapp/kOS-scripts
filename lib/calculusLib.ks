@@ -1,5 +1,6 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS calculusLib
 global calculusLib to ({
     local zeroVector to V(0,0,0).
 

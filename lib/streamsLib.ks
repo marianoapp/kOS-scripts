@@ -1,5 +1,6 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS streamsLib
 global streamsLib to ({
     local function initConsoleStdout {
         parameter override is false.

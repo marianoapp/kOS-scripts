@@ -1,5 +1,6 @@
 @LAZYGLOBAL off.
 
+// #EXTERNAL_IDS vectorLib
 global vectorLib to ({
     local function absVector {
         parameter vector.
