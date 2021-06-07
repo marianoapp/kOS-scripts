@@ -32,6 +32,17 @@ global translationLib to ({
         return asyncLib:newTask(isDone, whenDone).
     }
     
+    local function setRcsDeadband {
+        parameter deadband.
+
+        local rcsList to list().
+        list rcs in rcsList.
+        
+        for rcsPart in rcsList {
+            set rcsPart:deadband to deadband.
+        }
+    }
+
     local function initializePids {
         parameter tuneMode.
         
@@ -65,6 +76,8 @@ global translationLib to ({
         local minAxisAccs to pidsInfo[1].
         local factor to min(min(minAxisAccs:X, minAxisAccs:Y), minAxisAccs:Z) / 4.
         
+        setRcsDeadband(0).
+
         local function start {
             local velObj to calculusLib:vectorDerivative().
             local currentTime to 0.
