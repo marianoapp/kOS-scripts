@@ -72,6 +72,12 @@ global pidLib to ({
             set pidY:kd to kds:Y.
             set pidZ:kd to kds:Z.
         }
+
+        local function reset {
+            pidX:reset().
+            pidY:reset().
+            pidZ:reset().
+        }
         
         local function X {
             return pidX.
@@ -93,6 +99,7 @@ global pidLib to ({
             "setKps", setKps@,
             "setKis", setKis@,
             "setKds", setKds@,
+            "reset", reset@,
             "X", X@,
             "Y", Y@,
             "Z", Z@
@@ -160,6 +167,11 @@ global pidLib to ({
             set pidX:kd to kds:X.
             set pidY:kd to kds:Y.
         }
+
+        local function reset {
+            pidX:reset().
+            pidY:reset().
+        }
         
         local function X {
             return pidX.
@@ -177,6 +189,7 @@ global pidLib to ({
             "setKps", setKps@,
             "setKis", setKis@,
             "setKds", setKds@,
+            "reset", reset@,
             "X", X@,
             "Y", Y@
         ).

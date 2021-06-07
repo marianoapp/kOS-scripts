@@ -9,15 +9,22 @@ global calculusLib to ({
         local lastTime to time:seconds.
         local lastValue to zeroVector.
         local deltaTime to 0.
+        local initialized to false.
         
         local function calculate {
             parameter currentTime, currentValue.
             
             set deltaTime to currentTime - lastTime.
             local derivative to zeroVector:vec.
-            if deltaTime > 0 {
-                set derivative to (currentValue - lastValue) / deltaTime.
+            if initialized {
+                if deltaTime > 0 {
+                    set derivative to (currentValue - lastValue) / deltaTime.
+                }
             }
+            else {
+                set initialized to true.
+            }
+
             set lastTime to currentTime.
             set lastValue to currentValue:vec.
             

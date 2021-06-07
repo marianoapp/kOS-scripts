@@ -18,6 +18,7 @@ local landingModeEnum to lexicon(
 ).
 
 streamsLib:initConsoleStreams().
+clearscreen.
 
 abort off.
 
@@ -100,13 +101,13 @@ local function landAtPosition {
     lock steering to lookdirup(deorbitInfo:burnVector, ship:facing:topvector).
     local throttleValue to deorbitInfo:burnThrust / ship:availablethrust.
 
-    scheduler:addEvent(deorbitInfo:burnStartTime, { lock throttle to throttleValue. }).
+    scheduler:addEvent(deorbitInfo:burnStartTime - 0.02, { lock throttle to throttleValue. }).
     scheduler:addEvent(deorbitInfo:burnEndTime, {
         unlock throttle.
         unlock steering.
         execQueue:push({ refineOrbit(deorbitInfo:trajectoryData). }).
     }).
-    scheduler:addEvent(deorbitInfo:landingInfo:burnStartTime, { lock throttle to 1. }).
+    scheduler:addEvent(deorbitInfo:landingInfo:burnStartTime - 0.02, { lock throttle to 1. }).
     scheduler:addEvent(deorbitInfo:landingInfo:burnEndTime, {
         unlock throttle.
         execQueue:push(pointRadialOut@).
