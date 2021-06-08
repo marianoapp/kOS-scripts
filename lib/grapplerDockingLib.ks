@@ -1,53 +1,49 @@
 @LAZYGLOBAL off.
 
-// #EXTERNAL_IDS grapplerDockingLib, translationLib, rotationLib, steeringLib, asyncLib, grapplerLib
+// #EXTERNAL_IDS grapplerDockingLib, translationLib, steeringLib, asyncLib, grapplerLib
 // import libraries
 runoncepath("/lib/translationLib").
-runoncepath("/lib/rotationLib").
 runoncepath("/lib/steeringLib").
 runoncepath("/lib/asyncLib").
 runoncepath("/lib/grapplerLib").
+runoncepath("/lib/schedulingLib").
 
 global grapplerDockingLib to ({
     local function dock
     {
-        parameter grappler,             // grappler part
-                  targetVessel,         // vessel to grapple
-                  targetPositionRel,    // position to grapple, in target vessel coordinates
+        parameter grappler,        // grappler part
+                  targetVessel,    // vessel to grapple
+                  targetPosRel,    // position to grapple, in target vessel coordinates
                   topVector is ship:facing:topvector,
-                  speedBounds is list(0, 0).
+                  maxSpeed is 1.
         
-        // arm the grappler
+        // initialize the grappler
         grapplerLib:arm(grappler).
-        
-        // control from the grappler
         grapplerLib:controlfrom(grappler).
+        local grabTask to grapplerLib:grabDoneAsync(grappler).
         
-        lock targetPositionRaw to targetVessel:facing * targetPositionRel.
+        local targetPosRelNorm to targetPosRel:normalized.
         
         // turn the ship in the desired direction
-        local steerTask to steeringLib:steerToDelegateAsync({ return lookdirup(-targetPositionRaw, topVector). }).
+        // TODO: the steering should be normal to the surface of the part (how?)
+        local steerTask to steeringLib:steerToDelegateAsync({ return lookdirup(-(targetVessel:facing*targetPosRel), topVector). }).
 
         // position the vessel above the targetPosition
-        local positionOffset to V(0,0,4).
-        local targetPositionDel to { return targetVessel:position + targetPositionRaw + (targetPositionRaw:direction * positionOffset). }.
+        local positionOffset to 4.
+        local stopFlag to false.
+        local targetPositionDel to { return targetVessel:position + targetVessel:facing * (targetPosRel + targetPosRelNorm * positionOffset). }.
+        local stopCondition to { return stopFlag or abort. }.
+        local referencePosition to -facing * grappler:position.
         
-        local translateObj to translationLib:translateToPosition(targetPositionDel, rotationLib:rawToShip() * grappler:position).
-        translateObj:setSpeedBounds(0.2, 2).
-        if speedBounds[1] > 0 {
-            translateObj:setSpeedBounds(speedBounds[0], speedBounds[1]).
-        }
-        // when close enough approach and grab
-        when translateObj:isDone() then {
-            set positionOffset to V(0,0,0).
-            local grabTask to grapplerLib:grabDoneAsync(grappler).
-            when asyncLib:taskDone(grabTask) then {
-                translateObj:stop().
-            }
-        }
+        local tp to translationLib:translateToPosition(targetPositionDel, stopCondition, referencePosition, maxSpeed).
+
+        local sequence to schedulingLib:sequenceScheduler().
+        sequence:addEvent({ return tp:getDistance():mag < 0.25. }, { set positionOffset to 0. }).
+        sequence:addEvent({ return asyncLib:taskDone(grabTask). }, { set stopFlag to true. }).
+
         asyncLib:await(steerTask).
-        translateObj:start().
-        
+        tp:start().
+
         unlock steering.
     }
     

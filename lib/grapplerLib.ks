@@ -13,9 +13,7 @@ global grapplerLib to ({
 
     local function controlFrom {
         parameter part.
-        
-        local module to part:getModule("ModuleGrappleNode").
-        module:doevent("control from here").
+        doGrappleNodeEvent(part, "control from here").
     }
     
     local function setArmed {

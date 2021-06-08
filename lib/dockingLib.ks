@@ -90,16 +90,12 @@ global dockingLib to ({
     }
 
     local function dock {
-        parameter ownPort, targetPort, rollMatchMode is rollMatchModeEnum:Current, maxSpeed is 2.
+        parameter ownPort, targetPort, rollMatchMode is rollMatchModeEnum:Current, maxSpeed is 1.
         
         ownPort:controlfrom().
         
         // turn the ship in the desired direction
-        //local steerTask to steeringLib:steerToDelegateAsync(getSteeringDelegate(targetPort, rollMatchMode)).
-        // >> workaround because using the above instruction it's impossible to unlock the steering afterwards
-        local steerDelegate to getSteeringDelegate(targetPort, rollMatchMode).
-        lock steering to steerDelegate().
-        local steerTask to steeringLib:getNewSteeringTask().
+        local steerTask to steeringLib:steerToDelegateAsync(getSteeringDelegate(targetPort, rollMatchMode)).
 
         // position the vessel just above the docking port
         local positionOffset to 1.
@@ -118,6 +114,7 @@ global dockingLib to ({
         asyncLib:await(steerTask).
         tp:start().
         
+        lock steering to facing.    // workaround for the steering unlocking issue
         unlock steering.
     }
     
