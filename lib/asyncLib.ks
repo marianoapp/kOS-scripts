@@ -3,15 +3,20 @@
 // #EXTERNAL_IDS asyncLib
 global asyncLib to ({
     local function newTask {
-        parameter isDone.           // () => boolean
-        parameter whenDone is {}.   // () => void
+        parameter isDone,                   // () => boolean
+                  whenDone is donothing.    // () => void
         
-        local done to false.
-        when isDone() then {
-            whenDone().
-            set done to true.
+        if whenDone:typename = "KosDelegate" {
+            local done to false.
+            when isDone() then {
+                whenDone().
+                set done to true.
+            }
+            return { return done. }.
         }
-        return { return done. }.
+        else {
+            return isDone@.
+        }
     }
 
     local function await {

@@ -95,15 +95,23 @@ global nodesLib to ({
 
     local function virtualNodeFromNode {
         parameter theNode.
-        return virtualNode(time:seconds + theNode:eta, V(theNode:radialout, theNode:normal, theNode:prograde)).
+        return virtualNode(theNode:time, V(theNode:radialout, theNode:normal, theNode:prograde)).
     }
 
+    local function nodeFromBurnVector {
+        parameter UT, burnVector.
+    
+        local RAWtoNODE to -utilsLib:getOrbitRot(UT).
+        local nodeVector to RAWtoNODE * burnVector.
+        return node(UT, nodeVector:X, nodeVector:Y, nodeVector:Z).
+    }
 
     return lexicon(
         "pointsToNodes", pointsToNodes@,
         "nodeAddDeltaV", nodeAddDeltaV@,
         "nodeSetDeltaV", nodeSetDeltaV@,
         "virtualNode", virtualNode@,
-        "virtualNodeFromNode", virtualNodeFromNode@
+        "virtualNodeFromNode", virtualNodeFromNode@,
+        "nodeFromBurnVector", nodeFromBurnVector@
     ).
 }):call().
