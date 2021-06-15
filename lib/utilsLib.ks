@@ -19,27 +19,6 @@ global utilsLib to ({
         }.
     }
 
-    local function calculateBurnTime {
-        parameter totalDeltaV, engineIsp, shipThrust, shipMass is ship:mass.
-        
-        local Ispg to engineIsp * constant:g0.
-        local finalMass to shipMass / (constant:e^(totalDeltaV / Ispg)).
-        local massFlowRate to shipThrust / Ispg.
-        local burnTime to (shipMass - finalMass) / massFlowRate.
-
-        return burnTime.
-    }
-
-    local function calculateThrustValue {
-        parameter totalDeltaV, engineIsp, burnTime, shipMass is ship:mass.
-        
-        local Ispg to engineIsp * constant:g0.
-        local finalMass to shipMass / (constant:e^(totalDeltaV / Ispg)).
-        local shipThrust to ((shipMass - finalMass) * Ispg) / burnTime.
-
-        return shipThrust.
-    }
-
     local function memoryLog {
         parameter fileName.
 
@@ -87,8 +66,6 @@ global utilsLib to ({
     return lexicon(
         "getOrbitRot", getOrbitRot@,
         "getFixRotFunction", getFixRotFunction@,
-        "calculateBurnTime", calculateBurnTime@,
-        "calculateThrustValue", calculateThrustValue@,
         "memoryLog", memoryLog@
     ).
 }):call().
