@@ -122,7 +122,6 @@ local function drawLandingPosArrow {
     parameter landingPosition.
 
     local sp to vecdrawargs(v(0,0,0), v(0,0,0), green, "", 1, true).
-    set sp:width to 10.
     local landingPosNorm to landingPosition:normalized.
     local landingPosStart to landingPosition + (landingPosNorm * 1000).
     set sp:startupdater to { return landingPosStart + body:position. }.
@@ -185,13 +184,12 @@ local function landingDone {
     exit(0).
 }
 
-
 if landingMode = landingModeEnum:LandNow {
-    if ship:status = "SUB_ORBITAL" {
+    if ship:orbit:periapsis < 0 {
         execQueue:push(landNow@).
     }
     else {
-        stderr("Invalid status, 'LandNow' can only be used when on a suborbital trajectory").
+        stderr("Invalid status, 'LandNow' can only be used when the trajectory intersects with the surface").
         exit(2).
     }
 }
