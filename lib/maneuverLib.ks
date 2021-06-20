@@ -6,6 +6,9 @@ runoncepath("/lib/timeLib").
 runoncepath("/lib/schedulingLib").
 runoncepath("/lib/asyncLib").
 runoncepath("/lib/utilsLib").
+runoncepath("/lib/rcsLib").
+runoncepath("/lib/vectorLib").
+runoncepath("/lib/translationLib").
 
 global maneuverLib to ({
     local function getCircularization {
@@ -38,6 +41,23 @@ global maneuverLib to ({
         }
     }
 
+    local function fineTuneNode {
+        parameter maxError is 1e-3.
+
+        if hasnode {
+            local theNode to nextnode.
+            local getVelocityError to {
+                return theNode:deltav.
+            }.
+            local stopCondition to {
+                return theNode:deltav:mag < maxError.
+            }.
+            rcs on.
+            translationLib:cancelVelocityError(getVelocityError, stopCondition).
+            rcs off.
+        }
+    }
+
     local function execManeuver {
         parameter UT, burnVector, shipIsp, shipThrust, shipMass.
 
@@ -57,10 +77,10 @@ global maneuverLib to ({
             lock steering to lookdirup(burnVector, facing:topvector).
         }
         
-        wait until abs(time:seconds - startTime) < 0.01.
+        wait until abs(time:seconds - startTime) < 0.005.
         lock throttle to throttleLevel.
 
-        wait until abs(time:seconds - info:endTime) < 0.01.
+        wait until abs(time:seconds - info:endTime) < 0.005.
         lock throttle to 0.
         unlock steering.
         sas on.
@@ -97,6 +117,40 @@ global maneuverLib to ({
         return asyncLib:newTask({ return doneFlag. }).
     }
 
+    local function execManeuverRCS {
+        parameter UT, burnVector, shipIsp, shipThrust, shipMass.
+
+        // set the RCS deadband to zero
+        rcsLib:setDeadband(0).
+
+        // assume symmetric thrust in each axis
+        local rcsThrust to rcsLib:getTotalThrustList()[1].
+        local minThrust to min(rcsThrust:X, min(rcsThrust:Y, rcsThrust:Z)).
+        local rcsThrustCoef to minThrust * vectorLib:inverse(rcsThrust).
+
+        local translationVector to -facing * burnVector:normalized.
+        // deform the translation vector depending on the thrust available on each axis
+        set translationVector to vectorLib:elementWiseProduct(translationVector, rcsThrustCoef).
+        // calculate the thrust and isp accounting for thrusters firing at an angle
+        local activeThrust to vectorLib:elementWiseProduct(translationVector, rcsThrust).
+        set shipIsp to shipIsp * (activeThrust:mag / (abs(activeThrust:X) + abs(activeThrust:Y) + abs(activeThrust:Z))).
+        set shipThrust to activeThrust:mag.
+        local info to execManeuverInfo(UT, burnVector:mag, shipIsp, shipThrust, shipMass).
+
+        // reduce the translation vector to match the calculated thrust
+        set translationVector to translationVector * (info:thrust / shipThrust).
+
+        // RCS thrusters take three ticks to spin-up and one tick to spin-down
+        local startTime to info:startTime - 0.06.
+        local endTime to info:endTime - 0.02.
+
+        wait until abs(time:seconds - startTime) < 0.005.
+        set ship:control:translation to translationVector.
+
+        wait until abs(time:seconds - endTime) < 0.005.
+        set ship:control:translation to V(0,0,0).
+    }
+
     local function execManeuverInfo {
         parameter UT, dV, shipIsp, shipThrust, shipMass.
 
@@ -115,7 +169,7 @@ global maneuverLib to ({
         set shipThrust to thrustFromBurnTime(dV, shipIsp, totalBurnTime, shipMass).
         // calculate the start time to burn around half the dv before and after the UT
         local burnStartTime to burnTimeFromThrust(dV/2, shipIsp, shipThrust, shipMass).
-        set burnStartTime to timeLib:alignTimestamp(UT - burnStartTime).
+        set burnStartTime to UT - timeLib:alignOffset(burnStartTime).
         local burnEndTime to burnStartTime + totalBurnTime.
 
         return lex(
@@ -160,8 +214,10 @@ global maneuverLib to ({
         "getCircularization", getCircularization@,
         "execNode", execNode@,
         "execNodeAsync", execNodeAsync@,
+        "fineTuneNode", fineTuneNode@,
         "execManeuver", execManeuver@,
         "execManeuverAsync", execManeuverAsync@,
+        "execManeuverRCS", execManeuverRCS@,
         "execManeuverInfo", execManeuverInfo@,
         "burnTimeFromThrust", burnTimeFromThrust@,
         "burnInfoFromThrust", burnInfoFromThrust@,
