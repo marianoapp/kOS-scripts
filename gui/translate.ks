@@ -14,7 +14,7 @@ if standalone {
 streamsLib:initGuiStreams().
 global exitCode to 0.
 
-local translationModesEnum to lexicon(
+local translationModesEnum to lex(
     "Cancel velocity", 1,
     "Maintain position", 2
 ).

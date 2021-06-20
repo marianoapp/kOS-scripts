@@ -91,7 +91,7 @@ global pidLib to ({
             return pidZ.
         }
         
-        return lexicon(
+        return lex(
             "setpoint", setpoint@,
             "update", update@,
             "setBounds", setBounds@,
@@ -181,7 +181,7 @@ global pidLib to ({
             return pidY.
         }
         
-        return lexicon(
+        return lex(
             "setpoint", setpoint@,
             "update", update@,
             "setBounds", setBounds@,
@@ -195,7 +195,7 @@ global pidLib to ({
         ).
     }
     
-    return lexicon(
+    return lex(
         "pidVector", pidVector@,
         "pidVectorXY", pidVectorXY@
     ).

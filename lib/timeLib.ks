@@ -13,7 +13,7 @@ global timeLib to ({
         return round(timeOffset*50) / 50.
     }
     
-    return lexicon(
+    return lex(
         "alignTimestamp", alignTimestamp@,
         "alignOffset", alignOffset@
     ).

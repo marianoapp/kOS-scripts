@@ -18,7 +18,7 @@ local function exit {
     set exitCode to paramExitCode.
 }
 
-local availableModes to lexicon(
+local availableModes to lex(
     "CancelVelocity", 1,
     "MaintainPosition", 2
 ).

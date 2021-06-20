@@ -46,13 +46,13 @@ global estimationLib to ({
             return eofFlag.
         }
 
-        return lexicon(
+        return lex(
             "getValue", getValue@,
             "EOF", EOF@
         ).
     }
 
-    return lexicon(
+    return lex(
         "forwardLinearInterpolator", forwardLinearInterpolator@
     ).
 }):call().

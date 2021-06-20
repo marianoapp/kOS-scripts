@@ -13,7 +13,7 @@ global dependencyLib to ({
         local fileItem to open(filePath).
         if fileItem:typename = "VolumeFile" {
             local searchKeyConst to "runonce" + "path".
-            local toVisit to lexicon().
+            local toVisit to lex().
             local fileContent to fileItem:readall:string.
             local matches to stringLib:findAll(fileContent, searchKeyConst).
             
@@ -37,7 +37,7 @@ global dependencyLib to ({
     local function getDependencies {
         parameter filePath.
         
-        local visited to lexicon().
+        local visited to lex().
         getDependenciesRecursive(filePath, visited).
         
         return visited:keys.
@@ -54,7 +54,7 @@ global dependencyLib to ({
         }
     }
 
-    return lexicon(
+    return lex(
         "getDependencies", getDependencies@,
         "copyFileAndDepsToVolume", copyFileAndDepsToVolume@
     ).

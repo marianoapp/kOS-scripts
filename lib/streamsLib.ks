@@ -45,7 +45,7 @@ global streamsLib to ({
         }
     }
 
-    return lexicon(
+    return lex(
         "initConsoleStreams", initConsoleStreams@,
         "initGuiStreams", initGuiStreams@
     ).

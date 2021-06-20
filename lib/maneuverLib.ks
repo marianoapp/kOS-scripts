@@ -210,7 +210,7 @@ global maneuverLib to ({
         return shipThrust.
     }
 
-    return lexicon(
+    return lex(
         "getCircularization", getCircularization@,
         "execNode", execNode@,
         "execNodeAsync", execNodeAsync@,

@@ -76,7 +76,7 @@ global thrustBalanceLib to ({
             }
         }
         
-        return lexicon(
+        return lex(
             "balance", balance@
         ).
     }
@@ -98,12 +98,12 @@ global thrustBalanceLib to ({
             }
         }
         
-        return lexicon(
+        return lex(
             "balance", balance@
         ).
     }
     
-    return lexicon(
+    return lex(
         "simpleThrustBalancer", simpleThrustBalancer@,
         "thrustBalancer", thrustBalancer@
     ).

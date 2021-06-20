@@ -19,12 +19,12 @@ global statisticsLib to ({
             return total / items:length.
         }
         
-        return lexicon(
+        return lex(
             "addItem", addItem@
         ).
     }
         
-    return lexicon(
+    return lex(
         "movingAvgVector", movingAvgVector@
     ).
 }):call().

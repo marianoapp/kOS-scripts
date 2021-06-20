@@ -47,7 +47,7 @@ global grapplerDockingLib to ({
         unlock steering.
     }
     
-    return lexicon(
+    return lex(
         "dock", dock@
     ).
 }):call().

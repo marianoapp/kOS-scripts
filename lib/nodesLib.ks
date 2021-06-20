@@ -85,7 +85,7 @@ global nodesLib to ({
             return ORBITtoRAW * deltaV.
         }
 
-        return lexicon(
+        return lex(
             "setUT", setUT@,
             "getDeltaV", getDeltaV@,
             "setDeltaV", setDeltaV@,
@@ -106,7 +106,7 @@ global nodesLib to ({
         return node(UT, nodeVector:X, nodeVector:Y, nodeVector:Z).
     }
 
-    return lexicon(
+    return lex(
         "pointsToNodes", pointsToNodes@,
         "nodeAddDeltaV", nodeAddDeltaV@,
         "nodeSetDeltaV", nodeSetDeltaV@,

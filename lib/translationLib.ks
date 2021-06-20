@@ -9,7 +9,7 @@ runoncepath("/lib/rcsLib").
 runoncepath("/lib/asyncLib").
 
 global translationLib to ({
-    local pidTuneMode to lexicon(
+    local pidTuneMode to lex(
         "SetpointTracking", 1,
         "DisturbanceRejection", 2
     ).
@@ -114,7 +114,7 @@ global translationLib to ({
             return distanceToTarget.
         }
         
-        return lexicon(
+        return lex(
             "start", start@,
             "getDistance", getDistance@
         ).
@@ -162,7 +162,7 @@ global translationLib to ({
         // TODO: kill movement
     }
     
-    return lexicon(
+    return lex(
         "translate", translate@,
         "translateAsync", translateAsync@,
         "translateToPosition", translateToPosition@,

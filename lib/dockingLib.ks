@@ -13,14 +13,14 @@ global dockingLib to ({
     // 0- keep current roll
     // 1- align roll to closest 90 degree angle
     // 2- match roll exactly
-    local rollMatchModeEnum to lexicon(
+    local rollMatchModeEnum to lex(
         "Current", 0,
         "Closest", 1,
         "Exact", 2
     ).
 
-    local partsMetadata to lexicon(
-        "dockingPort2", lexicon(
+    local partsMetadata to lex(
+        "dockingPort2", lex(
             "frontOffset", 0.3
         )
     ).
@@ -118,7 +118,7 @@ global dockingLib to ({
         unlock steering.
     }
     
-    return lexicon(
+    return lex(
         "rollMatchModeEnum", rollMatchModeEnum,
         "findDockingPort", findDockingPort@,
         "dock", dock@

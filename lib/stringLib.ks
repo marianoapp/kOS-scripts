@@ -20,7 +20,7 @@ global stringLib to ({
         return matches.
     }
     
-    return lexicon(
+    return lex(
         "findAll", findAll@
     ).
 }):call().

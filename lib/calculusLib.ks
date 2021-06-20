@@ -35,7 +35,7 @@ global calculusLib to ({
             return deltaTime.
         }
         
-        return lexicon(
+        return lex(
             "calculate", calculate@,
             "deltaTime", getDeltaTime@
         ).
@@ -60,7 +60,7 @@ global calculusLib to ({
             return doubleDerivative.
         }
         
-        return lexicon("calculate", calculate@).
+        return lex("calculate", calculate@).
     }
     
     local function vectorErrorDerivative {
@@ -82,7 +82,7 @@ global calculusLib to ({
             return derivative.
         }
         
-        return lexicon(
+        return lex(
             "calculate", calculate@
         ).
     }
@@ -106,12 +106,12 @@ global calculusLib to ({
             return derivative.
         }
         
-        return lexicon(
+        return lex(
             "calculate", calculate@
         ).
     }
     
-    return lexicon(
+    return lex(
         "vectorDerivative", vectorDerivative@,
         "vectorDoubleDerivative", vectorDoubleDerivative@,
         "vectorErrorDerivative", vectorErrorDerivative@,

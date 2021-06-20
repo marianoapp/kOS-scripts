@@ -40,14 +40,14 @@ global optimizationLib to ({
             set initialized to false.
         }
 
-        return lexicon(
+        return lex(
             "updateGetDelta", updateGetDelta@,
             "update", update@,
             "reset", reset@
         ).
     }
 
-    return lexicon(
+    return lex(
         "scalarErrorMinNR", scalarErrorMinNR@
     ).
 }):call().

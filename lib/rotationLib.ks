@@ -62,7 +62,7 @@ global rotationLib to ({
         return facing:forevector.
     }
     
-    return lexicon(
+    return lex(
         "shipToRaw", shipToRaw@,
         "rawToShip", rawToShip@,
         "partToRaw", partToRaw@,

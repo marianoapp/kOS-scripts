@@ -56,14 +56,14 @@ global utilsLib to ({
             log data:join(char(10)) to fileName.
         }
 
-        return lexicon(
+        return lex(
             "append", append@,
             "appendMany", appendMany@,
             "flush", flush@
         ).
     }
 
-    return lexicon(
+    return lex(
         "getOrbitRot", getOrbitRot@,
         "getFixRotFunction", getFixRotFunction@,
         "memoryLog", memoryLog@

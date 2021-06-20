@@ -82,7 +82,7 @@ global vectorLib to ({
         ).
     }
     
-    return lexicon(
+    return lex(
         "absVector", absVector@,
         "roundVector", roundVector@,
         "bound", bound@,

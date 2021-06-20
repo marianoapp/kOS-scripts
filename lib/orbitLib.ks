@@ -41,7 +41,7 @@ global orbitLib to ({
         return mod(value + 360, 360).
     }
 
-    return lexicon(
+    return lex(
         "findOrbitAltitudeIntersectionTime", findOrbitAltitudeIntersectionTime@
     ).
 }):call().

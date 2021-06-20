@@ -7,7 +7,7 @@ global guiLib to ({
 
         local mainGui IS GUI(size[0], size[1]).
         local messageQueue to queue().
-        local messageHandlers to lexicon().
+        local messageHandlers to lex().
         local exitLoop to false.
 
         addTitleBar().
@@ -108,7 +108,7 @@ global guiLib to ({
             }
         }
 
-        return lexicon(
+        return lex(
             "mainGui", mainGui,
             "addMessageHandler", addMessageHandler@,
             "postMessage", postMessage@,
@@ -116,7 +116,7 @@ global guiLib to ({
         ).
     }
 
-    return lexicon(
+    return lex(
         "createGuiHandler", createGuiHandler@
     ).
 }):call().

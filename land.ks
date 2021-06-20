@@ -12,7 +12,7 @@ runoncepath("/lib/estimationLib").
 runoncepath("/lib/translationLib").
 runoncepath("/lib/vectorLib").
 
-local landingModeEnum to lexicon(
+local landingModeEnum to lex(
     "LandNow", 1,
     "LandAtPosition", 2
 ).

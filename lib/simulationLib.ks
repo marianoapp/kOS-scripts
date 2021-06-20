@@ -65,9 +65,9 @@ global simulationLib to ({
             return simState[2]:mag >= 0.1.
         }.
 
-        return simulate(lexicon("startTime", startTime, "startPos", startPos, "startVelocity", startVelocity, "startMass", startMass),
-                        lexicon("shipThrust", shipThrust, "engineIsp", engineIsp),
-                        lexicon("minDt", minDt, "calculateAcceleration", calculateAcceleration, "loopCondition", loopCondition, "refineCondition", refineCondition)).
+        return simulate(lex("startTime", startTime, "startPos", startPos, "startVelocity", startVelocity, "startMass", startMass),
+                        lex("shipThrust", shipThrust, "engineIsp", engineIsp),
+                        lex("minDt", minDt, "calculateAcceleration", calculateAcceleration, "loopCondition", loopCondition, "refineCondition", refineCondition)).
     }
 
     local function simulateThrust {
@@ -85,9 +85,9 @@ global simulationLib to ({
             return abs(simState[0] - endTime) >= 0.01.
         }
 
-        return simulate(lexicon("startTime", startTime, "startPos", startPos, "startVelocity", startVelocity, "startMass", startMass),
-                        lexicon("shipThrust", shipThrust, "engineIsp", engineIsp),
-                        lexicon("minDt", minDt, "maxDt", maxDt, "calculateAcceleration", calculateAcceleration@, "loopCondition", loopCondition@, "refineCondition", refineCondition@)).
+        return simulate(lex("startTime", startTime, "startPos", startPos, "startVelocity", startVelocity, "startMass", startMass),
+                        lex("shipThrust", shipThrust, "engineIsp", engineIsp),
+                        lex("minDt", minDt, "maxDt", maxDt, "calculateAcceleration", calculateAcceleration@, "loopCondition", loopCondition@, "refineCondition", refineCondition@)).
 
     }
 
@@ -106,9 +106,9 @@ global simulationLib to ({
             return abs(simState[0] - endTime) >= 0.01.
         }
 
-        return simulate(lexicon("startTime", startTime, "startPos", startPos, "startVelocity", startVelocity, "startMass", startMass),
-                        lexicon("shipThrust", 0, "engineIsp", 1),
-                        lexicon("minDt", minDt, "calculateAcceleration", calculateAcceleration@, "loopCondition", loopCondition@, "refineCondition", refineCondition@)).
+        return simulate(lex("startTime", startTime, "startPos", startPos, "startVelocity", startVelocity, "startMass", startMass),
+                        lex("shipThrust", 0, "engineIsp", 1),
+                        lex("minDt", minDt, "calculateAcceleration", calculateAcceleration@, "loopCondition", loopCondition@, "refineCondition", refineCondition@)).
 
     }
 
@@ -207,7 +207,7 @@ global simulationLib to ({
         return simHistory.
     }
 
-    return lexicon(
+    return lex(
         "simulateToZeroVelocity", simulateToZeroVelocity@,
         "simulateThrust", simulateThrust@,
         "simulateCoasting", simulateCoasting@

@@ -76,7 +76,7 @@ global grapplerLib to ({
         return asyncLib:newTask(isDone@).
     }
         
-    return lexicon(
+    return lex(
         "getGrapplers", getGrapplers@,
         "controlFrom", controlFrom@,
         "setArmed", setArmed@,

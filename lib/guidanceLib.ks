@@ -122,14 +122,14 @@ global guidanceLib to ({
             set stopFlag to true.
         }
                 
-        return lexicon(
+        return lex(
             "start", start@,
             "stop", stop@
         ).
     }
 
 
-    return lexicon(
+    return lex(
         "APN", APN@
     ).
 }):call().

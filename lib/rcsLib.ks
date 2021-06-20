@@ -6,7 +6,7 @@ runoncepath("/lib/rotationLib").
 
 global rcsLib to ({
     local function getTotalThrust {
-        local totalThrust to lexicon(
+        local totalThrust to lex(
             "X+", 0,
             "X-", 0,
             "Y+", 0,
@@ -65,7 +65,7 @@ global rcsLib to ({
         }
     }
     
-    return lexicon(
+    return lex(
         "getTotalThrust", getTotalThrust@,
         "getTotalThrustList", getTotalThrustList@,
         "enableParts", enableParts@

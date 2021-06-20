@@ -31,7 +31,7 @@ global asyncLib to ({
         return task().
     }
 
-    return lexicon(
+    return lex(
         "newTask", newTask@,
         "await", await@,
         "taskDone", taskDone@

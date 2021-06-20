@@ -67,7 +67,7 @@ global steeringLib to ({
         // }.
     // }
 
-    return lexicon(
+    return lex(
         "getDirectionNoRoll", getDirectionNoRoll@,
         "getVesselDirection", getVesselDirection@,
         "steerToConstant", steerToConstant@,

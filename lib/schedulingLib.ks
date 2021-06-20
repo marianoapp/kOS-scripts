@@ -31,7 +31,7 @@ global schedulingLib to ({
             set stopFlag to true.
         }
         
-        return lexicon(
+        return lex(
             "start", start@,
             "stop", stop@
         ).
@@ -105,7 +105,7 @@ global schedulingLib to ({
             eventList:clear().
         }
         
-        return lexicon(
+        return lex(
             "addEvent", addEvent@,
             "reset", reset@
         ).
@@ -160,14 +160,14 @@ global schedulingLib to ({
             eventList:clear().
         }
 
-        return lexicon(
+        return lex(
             "addEvent", addEvent@,
             "reset", reset@
         ).
     }
 
 
-    return lexicon(
+    return lex(
         "timeoutScheduler", timeoutScheduler@,
         "eventScheduler", eventScheduler@,
         "sequenceScheduler", sequenceScheduler@

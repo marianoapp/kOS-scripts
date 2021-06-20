@@ -211,7 +211,7 @@ global landingLib to ({
 
         local landingProgressUpdater to {
             parameter landingSimInfo.
-            progressUpdater(lexicon("landingSimInfo", landingSimInfo)).
+            progressUpdater(lex("landingSimInfo", landingSimInfo)).
         }.
 
         until false {
@@ -253,7 +253,7 @@ global landingLib to ({
             // calculate error
             set error to RAWtoSURF * (landingInfo:landingPosition - targetPosition).
 
-            progressUpdater(lexicon("progradeError", error:X,
+            progressUpdater(lex("progradeError", error:X,
                                     "normalError", error:Y,
                                     "nodeDV", nodeDV,
                                     "burnVector", burnVector,
@@ -303,7 +303,7 @@ global landingLib to ({
             remove nodeItem.
         }
 
-        return lexicon(
+        return lex(
             "burnVector", burnVector,
             "burnThrust", deorbitThrust,
             "burnStartTime", startTime,
@@ -348,7 +348,7 @@ global landingLib to ({
                 set simBurnStartDelay to 0.
             }
 
-            progressUpdater(lexicon("dt", deltaTimeList[deltaTimeIndex],
+            progressUpdater(lex("dt", deltaTimeList[deltaTimeIndex],
                                     "steps", simHistory:length,
                                     "velocityError", round(simEndState[2]:mag, 4),
                                     "altitudeError", round(altitudeError, 2),
@@ -371,14 +371,14 @@ global landingLib to ({
         local burnStartTime to simBurnStartTime.
         local burnEndTime to timeLib:alignTimestamp(simEndState[0]).
         
-        return lexicon(
+        return lex(
             "burnStartTime", burnStartTime,
             "burnEndTime", burnEndTime,
             "landingPosition", simEndState[1]
         ).
     }
     
-    return lexicon(
+    return lex(
         "findOrbitImpactPosition", findOrbitImpactPosition@,
         "calculateLanding", calculateLanding@,
         "calculateDeorbitBurn", calculateDeorbitBurn@
