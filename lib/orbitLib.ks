@@ -41,7 +41,13 @@ global orbitLib to ({
         return mod(value + 360, 360).
     }
 
+    local function getOrbitalEnergy {
+        parameter orbitPatch is ship:orbit.
+        return -orbitPatch:body:mu / (2*orbitPatch:semimajoraxis).
+    }
+
     return lex(
-        "findOrbitAltitudeIntersectionTime", findOrbitAltitudeIntersectionTime@
+        "findOrbitAltitudeIntersectionTime", findOrbitAltitudeIntersectionTime@,
+        "getOrbitalEnergy", getOrbitalEnergy@
     ).
 }):call().

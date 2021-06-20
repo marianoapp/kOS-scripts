@@ -32,17 +32,6 @@ global translationLib to ({
         return asyncLib:newTask(isDone, whenDone).
     }
     
-    local function setRcsDeadband {
-        parameter deadband.
-
-        local rcsList to list().
-        list rcs in rcsList.
-        
-        for rcsPart in rcsList {
-            set rcsPart:deadband to deadband.
-        }
-    }
-
     local function initializePids {
         parameter tuneMode.
         
@@ -76,7 +65,7 @@ global translationLib to ({
         local minAxisAccs to pidsInfo[1].
         local factor to min(min(minAxisAccs:X, minAxisAccs:Y), minAxisAccs:Z) / 4.
         
-        setRcsDeadband(0).
+        rcsLib:setDeadband(0).
 
         local function start {
             local velObj to calculusLib:vectorDerivative().
@@ -120,13 +109,14 @@ global translationLib to ({
         ).
     }
 
-
     local function cancelVelocityError {
         parameter velocityError,    // () => Vector     returns the velocity error (RAW)
                   stopCondition.    // () => Boolean    returns true to abort the loop
 
         local pids to initializePids(pidTuneMode:DisturbanceRejection)[0].
         pids:setpoint(V(0,0,0)).
+
+        rcsLib:setDeadband(0).
 
         local pids_update to pids:update.
         local shipCtrl to ship:control.

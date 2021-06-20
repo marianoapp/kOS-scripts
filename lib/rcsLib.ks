@@ -1,9 +1,6 @@
 @LAZYGLOBAL off.
 
-// #EXTERNAL_IDS rcsLib, rotationLib
-// import libraries
-runoncepath("/lib/rotationLib").
-
+// #EXTERNAL_IDS rcsLib
 global rcsLib to ({
     local function getTotalThrust {
         local totalThrust to lex(
@@ -31,6 +28,8 @@ global rcsLib to ({
                 for tv in rcsPart:thrustVectors {
                     // negative because the effect is in the opposite direction of the thrust
                     local effect to -((RAWtoSHIP*tv) * rcsPart:availablethrust).
+                    // TODO: this calculation of thrust based on enabled actuations only work
+                    //       when thrust vectors are aligned with the ship facing vectors
                     if rcsPart:starboardenabled {
                         addTotalThrust("X", effect:X).
                     }
@@ -64,10 +63,36 @@ global rcsLib to ({
             module:setfield("rcs", enable).
         }
     }
+
+    local function setDeadband {
+        parameter deadband.
+
+        local rcsList to list().
+        list rcs in rcsList.
+
+        for rcsPart in rcsList {
+            set rcsPart:deadband to deadband.
+        }
+    }
+
+    local function toggleSteeringActuations {
+        parameter enabled.
+
+        local rcsList to list().
+        list rcs in rcsList.
+
+        for rcsPart in rcsList {
+            set rcsPart:yawenabled to enabled.
+            set rcsPart:pitchenabled to enabled.
+            set rcsPart:rollenabled to enabled.
+        }
+    }
     
     return lex(
         "getTotalThrust", getTotalThrust@,
         "getTotalThrustList", getTotalThrustList@,
-        "enableParts", enableParts@
+        "enableParts", enableParts@,
+        "setDeadband", setDeadband@,
+        "toggleSteeringActuations", toggleSteeringActuations@
     ).
 }):call().
