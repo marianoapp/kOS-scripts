@@ -7,7 +7,7 @@ runoncepath("/lib/simulationLib").
 runoncepath("/lib/timeLib").
 runoncepath("/lib/nodesLib").
 runoncepath("/lib/utilsLib").
-runoncepath("/lib/maneuverLib").
+runoncepath("/lib/maneuverExecLib").
 runoncepath("/lib/optimizationLib").
 
 global landingLib to ({
@@ -73,7 +73,7 @@ global landingLib to ({
         local impactData to findOrbitImpactPosition().
 
         // burn time required to kill all the speed (ignoring gravity for now)
-        local burnTime to maneuverLib:burnTimeFromThrust(impactData[2]:mag, engineIsp, shipThrust, ship:mass).
+        local burnTime to maneuverExecLib:burnTimeFromThrust(impactData[2]:mag, engineIsp, shipThrust, ship:mass).
         local simStartTime to impactData[0] - burnTime.
         
         local getPosVelAtTime to getPosVelAtTimeFromOrbit().
@@ -197,7 +197,7 @@ global landingLib to ({
 
         local virtualNode to nodesLib:virtualNodeFromNode(deorbitNode).
         local deorbitThrust to shipThrust.
-        local nodeBurnTime to maneuverLib:burnTimeFromThrust(virtualNode:getBurnVector():mag, engineIsp, shipThrust*0.9, ship:mass).
+        local nodeBurnTime to maneuverExecLib:burnTimeFromThrust(virtualNode:getBurnVector():mag, engineIsp, shipThrust*0.9, ship:mass).
         local startTime to timeLib:alignTimestamp(nodeUT - (nodeBurnTime / 2)).
         local endTime to startTime + timeLib:alignOffset(nodeBurnTime).
         set nodeBurnTime to endTime - startTime.    // update the node burn time with the aligned time stamps
@@ -227,7 +227,7 @@ global landingLib to ({
             set burnVector to fixRot * virtualNode:getBurnVector().
             
             // calculate the thrust required to achieve the deltaV in the time alloted for the burn
-            set deorbitThrust to maneuverLib:thrustFromBurnTime(burnVector:mag, engineIsp, nodeBurnTime, ship:mass).
+            set deorbitThrust to maneuverExecLib:thrustFromBurnTime(burnVector:mag, engineIsp, nodeBurnTime, ship:mass).
 
             set simHistoryBurn to simulationLib:simulateThrust(startTime, startPos, startVelocity, ship:mass, burnVector, endTime,
                                                                deorbitThrust, engineIsp, body, settings[1], settings[2]).
@@ -238,7 +238,7 @@ global landingLib to ({
 
             // simulate the landing burn
             if simStartTime = 0 {
-                set simStartTime to intersectTime - maneuverLib:burnTimeFromThrust(burnEndState[2]:mag, engineIsp, shipThrust, burnEndState[3]).
+                set simStartTime to intersectTime - maneuverExecLib:burnTimeFromThrust(burnEndState[2]:mag, engineIsp, shipThrust, burnEndState[3]).
             }
             set landingInfo to calculateLandingBase(simStartTime, shipThrust, engineIsp, burnEndState[3], settings[3], settings[4],
                                                     getPosVelAtTime, getPositionError, landingProgressUpdater).
