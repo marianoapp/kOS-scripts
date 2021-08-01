@@ -9,6 +9,8 @@ runoncepath("/lib/utilsLib").
 runoncepath("/lib/rcsLib").
 runoncepath("/lib/vectorLib").
 runoncepath("/lib/translationLib").
+runoncepath("/lib/simulationLib").
+runoncepath("/lib/nodesLib").
 
 global maneuverExecLib to ({
     local function execNode {
@@ -47,9 +49,8 @@ global maneuverExecLib to ({
     }
 
     local function execManeuver {
-        parameter UT, burnVector, shipIsp, shipThrust, shipMass.
+        parameter UT, burnVector, shipIsp, shipThrust, shipMass, vectorUT is time:seconds.
 
-        local burnVectorUT to time:seconds.
         local info to execManeuverInfo(UT, burnVector:mag, shipIsp, shipThrust, shipMass).
         local throttleLevel to info:thrust / shipThrust.
         local startTime to info:startTime - 0.02.   // account for engine spin-up delay
@@ -57,9 +58,9 @@ global maneuverExecLib to ({
         sas off.
 
         // compensate for the frame of reference rotation
-        if altitude < 100e3 {
+        if utilsLib:isInRotatingFrame(-body:position) {
             local fixRotFunc to utilsLib:getFixRotFunction().
-            lock steering to lookdirup(fixRotFunc(time:seconds, burnVectorUT) * burnVector, facing:topvector).
+            lock steering to lookdirup(fixRotFunc(time:seconds, vectorUT) * burnVector, facing:topvector).
         }
         else {
             lock steering to lookdirup(burnVector, facing:topvector).
@@ -75,9 +76,8 @@ global maneuverExecLib to ({
     }
 
     local function execManeuverAsync {
-        parameter UT, burnVector, shipIsp, shipThrust, shipMass.
+        parameter UT, burnVector, shipIsp, shipThrust, shipMass, vectorUT is time:seconds.
 
-        local burnVectorUT to time:seconds.
         local info to execManeuverInfo(UT, burnVector:mag, shipIsp, shipThrust, shipMass).
         local throttleLevel to info:thrust / shipThrust.
         local startTime to info:startTime - 0.02.   // account for engine spin-up delay
@@ -88,7 +88,7 @@ global maneuverExecLib to ({
             sas off.
             if altitude < 100e3 {
                 local fixRotFunc to utilsLib:getFixRotFunction().
-                lock steering to lookdirup(fixRotFunc(time:seconds, burnVectorUT) * burnVector, facing:topvector).
+                lock steering to lookdirup(fixRotFunc(time:seconds, vectorUT) * burnVector, facing:topvector).
             }
             else {
                 lock steering to lookdirup(burnVector, facing:topvector).
@@ -197,6 +197,34 @@ global maneuverExecLib to ({
         return shipThrust.
     }
 
+    local function simulateManeuver {
+        parameter UT, burnVector, shipIsp, shipThrust, shipMass, vectorUT is time:seconds.
+
+        local info to execManeuverInfo(UT, burnVector:mag, shipIsp, shipThrust, shipMass).
+
+        wait 0. // to ensure the following calls are executed in the same tick.
+        local measurementsUT to time:seconds.
+        local startPos to positionat(ship, info:startTime) - body:position.
+        local startVel to velocityat(ship, info:startTime):orbit.
+        local fixRotFunc to utilsLib:getFixRotFunctionAuto(startPos).
+        local fixRot to fixRotFunc(info:endTime, measurementsUT).
+        // ensure the burn vector is in the same reference frame as the position and velocity
+        set burnVector to fixRotFunc(measurementsUT, vectorUT) * burnVector.
+
+        // simulate the burn
+        local simHistory to simulationLib:simulateThrust(info:startTime, startPos, startVel, ship:mass, burnVector, info:endTime,
+                                                         info:thrust, shipIsp, body, 0.02, 0.02).
+
+        // create a new orbit matching the sim result
+        local simEndState to simHistory[simHistory:length - 1].
+        set simEndState[1] to fixRot * simEndState[1].  // end position
+        set simEndState[2] to fixRot * simEndState[2].  // end velocity
+
+        nodesLib:pointsToNodes(ship:orbit, info:startTime, info:endTime, simEndState[1], simEndState[2]).
+
+        return simEndState.
+    }
+
     return lex(
         "execNode", execNode@,
         "execNodeAsync", execNodeAsync@,
@@ -207,6 +235,7 @@ global maneuverExecLib to ({
         "execManeuverInfo", execManeuverInfo@,
         "burnTimeFromThrust", burnTimeFromThrust@,
         "burnInfoFromThrust", burnInfoFromThrust@,
-        "thrustFromBurnTime", thrustFromBurnTime@
+        "thrustFromBurnTime", thrustFromBurnTime@,
+        "simulateManeuver", simulateManeuver@
     ).
 }):call().

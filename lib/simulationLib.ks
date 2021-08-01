@@ -21,7 +21,6 @@ global simulationLib to ({
     local function getCalcAccFixedDirThrustFunction {
         parameter currentBody, shipThrust, thrustVector.
 
-        local bodyAngularVel to currentBody:angularvel.
         local bodyMu to currentBody:mu.
         set thrustVector to thrustVector:normalized.
 
@@ -29,8 +28,6 @@ global simulationLib to ({
             parameter pos, vel, massParam.
 
             return (-pos:normalized) * (bodyMu / pos:sqrmagnitude) +    // gravity
-                   (-2 * vcrs(bodyAngularVel, vel)) +                   // coriolis
-                   vcrs(bodyAngularVel, vcrs(bodyAngularVel, -pos)) +   // centrifugal
                    thrustVector * (shipThrust / massParam).             // thrust
         }.
     }

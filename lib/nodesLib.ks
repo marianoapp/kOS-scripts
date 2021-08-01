@@ -5,14 +5,14 @@
 runoncepath("/lib/utilsLib").
 
 global nodesLib to ({
-    // assumes inverse rotation mode (ie below 100km from the surface)
     local function pointsToNodes {
         parameter orbitPatch, startTime, endTime, endPos, endVel.
 
-        local fixRotFunc to utilsLib:getFixRotFunction().
+        local fixRotFunc to utilsLib:getFixRotFunctionAuto(endPos).
         local fixRot to R(0,0,0).
         local RAWtoORBIT to -utilsLib:getOrbitRot(startTime).
-        local positionError to V(0,0,0).
+        local posAt to V(0,0,0).
+        local velAt to V(0,0,0).
         local error to V(0,0,0).
 
         local matchPosNode to node(startTime, 0, 0, 0).
@@ -20,9 +20,9 @@ global nodesLib to ({
 
         until false {
             set fixRot to fixRotFunc(endTime).
-            set positionError to (fixRot * (positionat(ship, endTime) - body:position)) - endPos.
-            set error to RAWtoORBIT * (positionError / (endTime - startTime)).
-            if abs(error:mag) > 0.1 {
+            set posAt to fixRot * (positionat(ship, endTime) - body:position).
+            set error to RAWtoORBIT * ((posAt - endPos) / (endTime - startTime)).
+            if abs(error:mag) > 0.005 {
                 nodeAddDeltaV(matchPosNode, -error).
             }
             else {
@@ -37,8 +37,10 @@ global nodesLib to ({
 
         until false {
             set fixRot to fixRotFunc(endTime).
-            set error to RAWtoORBIT * ((fixRot * velocityat(ship, endTime):surface) - endVel).
-            if abs(error:mag) > 0.01 {
+            set velAt to fixRot * velocityat(ship, endTime):orbit.
+            set error to RAWtoORBIT * (velAt - endVel).
+
+            if abs(error:mag) > 0.005 {
                 nodeAddDeltaV(matchVelNode, -error).
             }
             else {

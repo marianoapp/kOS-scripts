@@ -19,6 +19,25 @@ global utilsLib to ({
         }.
     }
 
+    local function getFixRotFunctionAuto {
+        parameter pos.
+
+        if isInRotatingFrame(pos) {
+            return getFixRotFunction().
+        }
+        else {
+            return {
+                parameter UT, reference is 0.
+                return R(0,0,0).
+            }.
+        }
+    }
+
+    local function isInRotatingFrame {
+        parameter pos.
+        return (pos:mag - body:radius) < 100e3.
+    }
+
     local function memoryLog {
         parameter fileName.
 
@@ -66,6 +85,8 @@ global utilsLib to ({
     return lex(
         "getOrbitRot", getOrbitRot@,
         "getFixRotFunction", getFixRotFunction@,
+        "getFixRotFunctionAuto", getFixRotFunctionAuto@,
+        "isInRotatingFrame", isInRotatingFrame@,
         "memoryLog", memoryLog@
     ).
 }):call().
