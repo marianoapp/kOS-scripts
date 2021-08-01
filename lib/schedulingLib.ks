@@ -80,7 +80,7 @@ global schedulingLib to ({
             if not liveTrigger {
                 set liveTrigger to true.
 
-                when abs(currentEvent[0] - time:seconds) < 0.005 then {
+                when abs(currentEvent[0] - time:seconds) < 0.01 then {
                     local returnValue to false.
                     if not stopFlag {
                         currentEvent[1]().

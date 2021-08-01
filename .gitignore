@@ -1,3 +1,5 @@
 extras
 *.min.ks
 *.min.ksm
+ksconfig.json
+*.py

@@ -65,10 +65,10 @@ global maneuverExecLib to ({
             lock steering to lookdirup(burnVector, facing:topvector).
         }
         
-        wait until abs(time:seconds - startTime) < 0.005.
+        wait until abs(time:seconds - startTime) < 0.01.
         lock throttle to throttleLevel.
 
-        wait until abs(time:seconds - info:endTime) < 0.005.
+        wait until abs(time:seconds - info:endTime) < 0.01.
         lock throttle to 0.
         unlock steering.
         sas on.
@@ -117,7 +117,7 @@ global maneuverExecLib to ({
         local rcsThrustCoef to minThrust * vectorLib:inverse(rcsThrust).
 
         local translationVector to -facing * burnVector:normalized.
-        // deform the translation vector depending on the thrust available on each axis
+        // deform the translation vector to account for the thrust available on each axis
         set translationVector to vectorLib:elementWiseProduct(translationVector, rcsThrustCoef).
         // calculate the thrust and isp accounting for thrusters firing at an angle
         local activeThrust to vectorLib:elementWiseProduct(translationVector, rcsThrust).
@@ -132,32 +132,31 @@ global maneuverExecLib to ({
         local startTime to info:startTime - 0.06.
         local endTime to info:endTime - 0.02.
 
-        wait until abs(time:seconds - startTime) < 0.005.
+        wait until abs(time:seconds - startTime) < 0.01.
         set ship:control:translation to translationVector.
 
-        wait until abs(time:seconds - endTime) < 0.005.
+        wait until abs(time:seconds - endTime) < 0.01.
         set ship:control:translation to V(0,0,0).
     }
 
     local function execManeuverInfo {
         parameter UT, dV, shipIsp, shipThrust, shipMass.
 
-        // adjust thrust level to ensure the burn time is longer than 1s.
+        // adjust thrust level to ensure the burn time is longer than 5s.
         local totalBurnTime to 0.
-        local minBurnTime to 1.
+        local minBurnTime to 5.
         until totalBurnTime >= minBurnTime {
             set totalBurnTime to burnTimeFromThrust(dV, shipIsp, shipThrust, shipMass).
             if totalBurnTime < minBurnTime {
                 set shipThrust to shipThrust / (minBurnTime / totalBurnTime).
             }
         }
-        // adjust thrust level to ensure the burn time is a multiple of 0.02
-        local alignedTotalBurnTime to timeLib:alignOffset(totalBurnTime).
-        set totalBurnTime to alignedTotalBurnTime + (choose 0.02 if alignedTotalBurnTime < totalBurnTime else 0).
+        // adjust thrust level to ensure the burn time is a multiple of 0.02 (rounded up)
+        set totalBurnTime to timeLib:alignOffset(totalBurnTime + 0.02).
         set shipThrust to thrustFromBurnTime(dV, shipIsp, totalBurnTime, shipMass).
         // calculate the start time to burn around half the dv before and after the UT
         local burnStartTime to burnTimeFromThrust(dV/2, shipIsp, shipThrust, shipMass).
-        set burnStartTime to UT - timeLib:alignOffset(burnStartTime).
+        set burnStartTime to timeLib:alignTimestamp(UT - burnStartTime).
         local burnEndTime to burnStartTime + totalBurnTime.
 
         return lex(
