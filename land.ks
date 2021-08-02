@@ -11,6 +11,7 @@ runoncepath("/lib/schedulingLib").
 runoncepath("/lib/estimationLib").
 runoncepath("/lib/translationLib").
 runoncepath("/lib/vectorLib").
+runoncepath("/lib/utilsLib").
 
 local landingModeEnum to lex(
     "LandNow", 1,
@@ -98,7 +99,10 @@ local function landAtPosition {
     local deorbitInfo to landingLib:calculateDeorbitBurn(ship:availablethrust, getIsp(), targetPosition, progressUpdater@).
     
     sas off.
-    lock steering to lookdirup(deorbitInfo:burnVector, ship:facing:topvector).
+
+    local fixRotFunc to utilsLib:getFixRotFunction().
+    lock steering to lookdirup(fixRotFunc(time:seconds, deorbitInfo:burnStartTime) * deorbitInfo:burnVector, facing:topvector).
+    //lock steering to lookdirup(deorbitInfo:burnVector, ship:facing:topvector).
     local throttleValue to deorbitInfo:burnThrust / ship:availablethrust.
 
     scheduler:addEvent(deorbitInfo:burnStartTime - 0.02, { lock throttle to throttleValue. }).

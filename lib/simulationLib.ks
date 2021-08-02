@@ -2,7 +2,7 @@
 
 // #EXTERNAL_IDS simulationLib
 global simulationLib to ({
-    local function getCalcAccRetroThrustFunction {
+    local function getCalcAccRetroThrustRotFunction {
         parameter currentBody, shipThrust.
 
         local bodyAngularVel to currentBody:angularvel.
@@ -50,7 +50,7 @@ global simulationLib to ({
     local function simulateToZeroVelocity {
         parameter startTime, startPos, startVelocity, startMass, shipThrust, engineIsp, currentBody, minDt.
 
-        local calculateAcceleration to getCalcAccRetroThrustFunction(currentBody, shipThrust).
+        local calculateAcceleration to getCalcAccRetroThrustRotFunction(currentBody, shipThrust).
 
         local loopCondition to {
             parameter simState, simPreviousState.

@@ -202,9 +202,11 @@ global landingLib to ({
         local endTime to startTime + timeLib:alignOffset(nodeBurnTime).
         set nodeBurnTime to endTime - startTime.    // update the node burn time with the aligned time stamps
                 
+        wait 0. // to ensure the following calls are executed in the same tick.
         set fixRot to fixRotFunc(startTime).
         local startPos to fixRot * (positionat(ship, startTime) - body:position).
-        local startVelocity to fixRot * (velocityat(ship, startTime):surface).
+        local startVel to fixRot * (velocityat(ship, startTime):orbit).
+        local endVelSurface to V(0,0,0).
 
         local simStartTime to 0.
         local loopCount to 0.
@@ -229,16 +231,21 @@ global landingLib to ({
             // calculate the thrust required to achieve the deltaV in the time alloted for the burn
             set deorbitThrust to maneuverExecLib:thrustFromBurnTime(burnVector:mag, engineIsp, nodeBurnTime, ship:mass).
 
-            set simHistoryBurn to simulationLib:simulateThrust(startTime, startPos, startVelocity, ship:mass, burnVector, endTime,
+            set simHistoryBurn to simulationLib:simulateThrust(startTime, startPos, startVel, ship:mass, burnVector, endTime,
                                                                deorbitThrust, engineIsp, body, settings[1], settings[2]).
             set burnEndState to simHistoryBurn[simHistoryBurn:length - 1].
+            // rotate the sim result
+            set fixRot to fixRotFunc(endTime, startTime).
+            set burnEndState[1] to fixRot * burnEndState[1].
+            set burnEndState[2] to fixRot * burnEndState[2].
+            set endVelSurface to burnEndState[2] - vcrs(body:angularvel, burnEndState[1]).
 
             // create new orbit matching the burn result
             nodesLib:pointsToNodes(ship:orbit, startTime, endTime, burnEndState[1], burnEndState[2]).
 
             // simulate the landing burn
             if simStartTime = 0 {
-                set simStartTime to intersectTime - maneuverExecLib:burnTimeFromThrust(burnEndState[2]:mag, engineIsp, shipThrust, burnEndState[3]).
+                set simStartTime to intersectTime - maneuverExecLib:burnTimeFromThrust(endVelSurface:mag, engineIsp, shipThrust, burnEndState[3]).
             }
             set landingInfo to calculateLandingBase(simStartTime, shipThrust, engineIsp, burnEndState[3], settings[3], settings[4],
                                                     getPosVelAtTime, getPositionError, landingProgressUpdater).
@@ -254,11 +261,11 @@ global landingLib to ({
             set error to RAWtoSURF * (landingInfo:landingPosition - targetPosition).
 
             progressUpdater(lex("progradeError", error:X,
-                                    "normalError", error:Y,
-                                    "nodeDV", nodeDV,
-                                    "burnVector", burnVector,
-                                    "deorbitThrust", deorbitThrust,
-                                    "loopCount", loopCount)).
+                                "normalError", error:Y,
+                                "nodeDV", nodeDV,
+                                "burnVector", burnVector,
+                                "deorbitThrust", deorbitThrust,
+                                "loopCount", loopCount)).
 
             if abs(error:X) > settings[0] or abs(error:Y) > (settings[0] / 2) {
                 set surfDV to NODEtoSURF * nodeDV.
@@ -349,10 +356,10 @@ global landingLib to ({
             }
 
             progressUpdater(lex("dt", deltaTimeList[deltaTimeIndex],
-                                    "steps", simHistory:length,
-                                    "velocityError", round(simEndState[2]:mag, 4),
-                                    "altitudeError", round(altitudeError, 2),
-                                    "burnStartDelay", simBurnStartDelay)).
+                                "steps", simHistory:length,
+                                "velocityError", round(simEndState[2]:mag, 4),
+                                "altitudeError", round(altitudeError, 2),
+                                "burnStartDelay", simBurnStartDelay)).
 
             if (simBurnStartDelay = 0) or ((simBurnStartDelay + simOldBurnStartDelay) = 0) {
                 set simIsGoodEnough to (simBurnStartDelay = 0) and (abs(altitudeError - lastAltitudeError) < 0.5).
