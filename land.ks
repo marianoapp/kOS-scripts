@@ -52,6 +52,7 @@ local function landNow {
         stdout("AltErr: " + simInfo:altitudeError + ", VelErr: " + simInfo:velocityError + ", BSD: " + simInfo:burnStartDelay + "          ", 0,1).
     }.
 
+    execQueue:push(pointRetrograde@).
     local landingInfo to landingLib:calculateLanding(ship:availablethrust, getIsp(), altitudeMargin, progressUpdater@).
 
     scheduler:addEvent(landingInfo:burnStartTime, { lock throttle to 1. }).
@@ -110,6 +111,7 @@ local function landAtPosition {
         unlock throttle.
         unlock steering.
         execQueue:push({ refineOrbit(deorbitInfo:trajectoryData). }).
+        execQueue:push(pointRetrograde@).
     }).
     scheduler:addEvent(deorbitInfo:landingInfo:burnStartTime - 0.02, { lock throttle to 1. }).
     scheduler:addEvent(deorbitInfo:landingInfo:burnEndTime, {
@@ -158,6 +160,14 @@ local function refineOrbit {
     sas on.
     rcs on.
     translationLib:cancelVelocityError(getVelocityError@, stopCondition@).
+    rcs off.
+}
+
+local function pointRetrograde {
+    set navmode to "SURFACE".
+    sas on.
+    wait 0.
+    set sasmode to "RETROGRADE".
 }
 
 local function refineLanding {
